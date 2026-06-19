@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-:root {
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -23,4 +23,52 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+} */
+
+@theme {
+  --color-prime: #C73246;
+  --color-background: #FFFFFE;
+  --color-foreground: #EFF0F3;
+  --color-stroke: #0D0D0D;
+  --color-paragraph: #2A2A2A;
+
+  /* --font-display: "Oswald", sans-serif;  */
+  --font-chivo: var(--font-chivo); 
+  --font-mulish: var(--font-mulish); 
+}
+
+@layer base {
+  body, p, span, a, li {
+    @apply font-chivo text-paragraph;
+  }
+  h1, h2, h3, h4, h5, h6, button {
+    @apply font-mulish text-stroke;
+  }
+}
+
+/* HIDE SCROLLBAR */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* CUSTOM SCROLLBAR */
+.custom-scrollbar::-webkit-scrollbar-track
+{
+	background-color: var(--color-foreground);
+  border-left: 1px solid var(--color-stroke); /* this acts like a border */
+}
+.custom-scrollbar::-webkit-scrollbar
+{
+	width: 8px;
+	background-color: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb
+{
+	background-color: #c73246;
+  border-color: var(--color-stroke);
+  border-left-width: 2px;
 }
