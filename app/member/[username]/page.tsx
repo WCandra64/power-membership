@@ -3,8 +3,7 @@ import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { getSession } from "@/lib/session";
-import { redirect, useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { redirect } from "next/navigation";
 import { logout } from "@/app/actions/logout";
 
 type Props = {
@@ -33,16 +32,6 @@ export default async function MemberPage({ params }: Props) {
     expiredDate: "06/07/2026",
     checkedIn: true,
   }
-  
-  const [pending, startTransition] = useTransition();
-  const router = useRouter();
-
-  const handleLogout = () => {
-    startTransition(async () => {
-      await logout();
-      router.push("/login");
-    });
-  };
 
   return (
     <div className="h-[calc(100vh-theme(spacing.12))] flex flex-col gap-8 py-4 px-6 justify-end items-center">
@@ -72,7 +61,7 @@ export default async function MemberPage({ params }: Props) {
 
       <div className="flex flex-col gap-4 w-full">
         <PrimaryButton disabled={member.checkedIn}>Check In</PrimaryButton>
-        <BareButton>
+        <BareButton onClick={logout}>
           <FontAwesomeIcon icon={faSignOutAlt} className="w-4" />
           Log Out
         </BareButton>
