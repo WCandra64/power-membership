@@ -3,7 +3,9 @@ import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { getSession } from "@/lib/session";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { logout } from "@/app/actions/logout";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -31,6 +33,16 @@ export default async function MemberPage({ params }: Props) {
     expiredDate: "06/07/2026",
     checkedIn: true,
   }
+  
+  const [pending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    startTransition(async () => {
+      await logout();
+      router.push("/login");
+    });
+  };
 
   return (
     <div className="h-[calc(100vh-theme(spacing.12))] flex flex-col gap-8 py-4 px-6 justify-end items-center">
