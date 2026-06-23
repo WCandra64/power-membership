@@ -2,14 +2,25 @@ import PrimaryButton from "@/components/PrimaryButton";
 import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
 type Props = {
   params: Promise<{ username: string }>;
 };
 
-export default async function Member({ params }: Props) {
+export default async function MemberPage({ params }: Props) {
   const { username } = await params;
+
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
+  if (session.role !== "member") {
+    redirect("/login");
+  }
 
   const member = {
     username,

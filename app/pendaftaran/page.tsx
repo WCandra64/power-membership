@@ -1,8 +1,6 @@
 "use client";
 
-import NavBar from "@/components/Navbar";
 import PrimaryButton from "@/components/PrimaryButton";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useRef, useState } from "react";
@@ -15,7 +13,7 @@ import { ChangeEvent, useRef, useState } from "react";
 //   setuju: string;
 // };
 
-export default function RegisterPage() {
+export default function RegistrationPage() {
   const [nama, setNama] = useState("");
   const [password, setPassword] = useState("");
   const [noHp, setNoHp] = useState("");

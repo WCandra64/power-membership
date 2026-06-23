@@ -1,16 +1,21 @@
 "use client";
 
-import NavBar from "@/components/Navbar";
 import PrimaryButton from "@/components/PrimaryButton";
 import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { faRemove } from "@fortawesome/free-solid-svg-icons";
 
 export default function AddMemberPage() {
+  
+  const [loading, setLoading] = useState(false);
+
+  const [credential, setCredential] = useState({
+    username: "",
+    password: "",
+  });
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -19,9 +24,9 @@ export default function AddMemberPage() {
   const router = useRouter();
 
   const [errors, setErrors] = useState({
-    name: "",
-    phoneType: "",
-    foto: "",
+    name: false,
+    phoneType: false,
+    photo: false,
   });
   
   const [showToast, setShowToast] = useState(false);
@@ -68,7 +73,7 @@ export default function AddMemberPage() {
     if (!file.type.startsWith("image/")) {
       setErrors((prev) => ({
         ...prev,
-        foto: "File harus berupa gambar.",
+        photo: true,
       }));
       return;
     }
@@ -76,30 +81,30 @@ export default function AddMemberPage() {
     setPhotoFile(file);
     setErrors((prev) => ({
       ...prev,
-      foto: "",
+      photo: true,
     }));
 
     // allow selecting same file later
     e.currentTarget.value = "";
   };
 
-  const handleSubmit = () => {
+  function validateForm() {
     const newErrors = {
-      name: "",
-      phoneType: "",
-      foto: "",
+      name: false,
+      phoneType: false,
+      photo: false,
     };
 
-    if (!name) newErrors.name = "Nama harus diisi";
-    if (phone && !/^\d+$/.test(phone)) newErrors.phoneType = "Nomor telepon harus berupa angka!";
-    if (!photoFile) newErrors.foto = "Foto harus diisi";
+    if (!name) newErrors.name = true;
+    if (phone && !/^\d+$/.test(phone)) newErrors.phoneType = true;
+    if (!photoFile) newErrors.photo = true;
 
     setErrors(newErrors);
 
     if (
       newErrors.name ||
       newErrors.phoneType ||
-      newErrors.foto
+      newErrors.photo
     ) {
       console.log(newErrors);
       toast();
@@ -115,9 +120,80 @@ export default function AddMemberPage() {
     });
   };
 
-  const handleSuccess = () => {
+  async function registerMember() {
+    try {
+      setLoading(true);
+
+      // upload image
+
+      const formData = new FormData();
+      formData.append("key", process.env.NEXT_PUBLIC_IMGBB_KEY!);
+      formData.append("image", photoFile!);
+
+      const imageRes = await fetch(
+        `https://api.imgbb.com/1/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const imageData = await imageRes.json();
+
+      console.log(imageData);
+
+      const photo = imageData.data.url;
+      const deletePhoto = imageData.data.delete_url;
+
+      // create member
+
+      const res = await fetch("/api/admin/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          photo,
+          deletePhoto,
+          startMembership,
+          endMembership,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message);
+      }
+
+      setCredential({
+        username: data.username,
+        password: data.password,
+      });
+
+      setMembershipDate(false);
+      setOpenSuccess(true);
+
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function handleSuccess() {
+    setName("");
+    setPhone("");
+    setPhotoFile(null);
+
+    setCredential({
+      username: "",
+      password: "",
+    });
+
     setOpenSuccess(false);
-    router.push("/login");
   }
 
   return (
@@ -151,8 +227,12 @@ export default function AddMemberPage() {
               `}
               value={name}
               onChange={(e) => {
-                setName(e.target.value);
-                setErrors((prev) => ({ ...prev, name: "" }));
+                const value = e.target.value
+                  .toLowerCase()
+                  .replace(/\b\w/g, (char) => char.toUpperCase());
+                  
+                setName(value);
+                setErrors((prev) => ({ ...prev, name: false }));
               }}
             />
           </div>
@@ -176,7 +256,7 @@ export default function AddMemberPage() {
               value={phone}
               onChange={(e) => {
                 setPhone(e.target.value);
-                setErrors((prev) => ({ ...prev, phoneType: "" }));
+                setErrors((prev) => ({ ...prev, phoneType: false }));
               }}
             />
           </div>
@@ -194,21 +274,8 @@ export default function AddMemberPage() {
 
             <label className="text-xs font-medium text-stroke">
               Foto <span className="text-prime">*</span>
-              <span className="text-prime">{errors.foto && " (Foto member harus diisi!)"}</span>
+              <span className="text-prime">{errors.photo && " (Foto member harus diisi!)"}</span>
             </label>
-            {/* <div className="flex gap-6 justify-between">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className={`text-left text-sm font-mulish underline cursor-pointer hover:text-stroke ${errors.foto ? "text-rose-900" : "text-prime"}`}
-              >
-                {photoFile ? `${photoFile.name}` : "Masukkan foto member di sini"}
-              </button>
-
-              {errors.foto && (
-                <p className="text-sm text-rose-900">{`(${errors.foto})`}</p>
-              )}
-            </div> */}
 
             {/* INPUT IMAGE */}
             <div onClick={() => fileInputRef.current?.click()} className="flex flex-col gap-1 cursor-pointer">
@@ -239,10 +306,10 @@ export default function AddMemberPage() {
 
         <div className="w-full flex flex-col gap-4">
           <PrimaryButton
-            onClick={handleSubmit}
-            disabled={false}
+            onClick={validateForm}
+            disabled={loading}
           >
-            Tambah Member
+            {loading? "Loading..." : "Tambah Member"}
           </PrimaryButton>
 
           <Link href="/admin">
@@ -291,14 +358,23 @@ export default function AddMemberPage() {
             </div>
             
             <div className="flex gap-2 pt-6">
-              <BareButton onClick={() => {
-                setMembershipDate(false);
-                setMembership(new Date());
-              }}>Batal</BareButton>
-              <PrimaryButton onClick={() => {
-                setMembershipDate(false);
-                window.location.reload();
-              }}>Daftarkan Member</PrimaryButton>
+              <BareButton
+                onClick={() => {
+                  setMembershipDate(false);
+                  setMembership(new Date());
+                }}
+              >
+                Batal
+              </BareButton>
+              <PrimaryButton
+                onClick={() => {
+                  setMembershipDate(false);
+                  // window.location.reload();
+                  registerMember();
+                }}
+              >
+                Daftarkan Member
+              </PrimaryButton>
             </div>
           </div>
         </div>
@@ -311,16 +387,28 @@ export default function AddMemberPage() {
 
           <div className="absolute p-6 w-full max-w-md">
             <div className="flex flex-col bg-background rounded-lg p-6  items-left gap-4">
-              <h3 className="text-lg font-black font-mulish text-center">Verifikasi Pendaftaran</h3>
+              <h3 className="text-lg font-black font-mulish text-center">Member Berhasil Didaftarkan!</h3>
+
               <hr className="border-stroke" />
-              <p className="text-sm text-paragraph pb-4">
-                Silakan hubungi pengurus untuk melakukan pembayaran (150rb) dan mengkonfirmasi pendaftaran Anda.
-                <br />
-                <br />
-                <a href="https://wa.me/6282220348804" target="_blank" className="text-prime italic underline hover:text-paragraph hover:no-underline">
-                  +62 822-2034-8804 (Pak Muh.)
-                </a>
-              </p>
+
+              <div className="flex flex-col gap-2 pb-4">
+                <div className="flex flex-col">
+                  <p className="text-xs text-paragraph">Username:</p>
+                  <span className="font-semibold text-sm tracking-wide">{credential.username}</span>
+                </div>
+
+                <div className="flex flex-col">
+                  <p className="text-xs text-paragraph">Password:</p>
+                  <span className="font-semibold text-sm tracking-wide">{credential.password}</span>
+                </div>
+                
+                <div className="flex flex-col">
+                  <p className="text-xs text-paragraph">Masa Aktif:</p>
+                  <span className="text-sm font-semibold">{new Date(startMembership).toLocaleDateString('id-ID', {dateStyle: 'long'})} - {new Date(endMembership).toLocaleDateString('id-ID', {dateStyle: 'long'})}</span>
+                </div>
+
+              </div>
+
               <PrimaryButton
                 onClick={handleSuccess}
                 disabled={false}
