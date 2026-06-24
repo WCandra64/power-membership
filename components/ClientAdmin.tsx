@@ -25,7 +25,7 @@ type Member = {
 }
 
 
-export default function AdminComponent() {
+export default function AdminPage() {
 
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +41,7 @@ export default function AdminComponent() {
     checkedIn: true,
   }
 
-  const [open, setOpen] = useState(true);
+  const [opStatus, setOpStatus] = useState<any>({}); 
 
   const [pengumuman, setPengumuman] = useState("");
 
@@ -97,6 +97,41 @@ export default function AdminComponent() {
     }
   ]);
 
+  async function fetchOpStatus() {
+    const res = await fetch("/api/operational");
+
+    const json = await res.json();
+    console.log(json);
+
+    setOpStatus(json);
+  }
+
+  async function changeOpStatus() {
+    try {
+      setLoading(true);
+
+      const res = await fetch("/api/admin/jadwal/override", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: !opStatus.operasional,
+          pengumuman,
+        }),
+      });
+
+      const json = await res.json();
+
+      if (res.ok) {
+        await fetchOpStatus();
+      } 
+    } finally {
+      setLoading(false);
+    }
+  }
+
   // LAST TRAINING
   function timePassed(date: string | Date) {
     const now = new Date();
@@ -137,9 +172,17 @@ export default function AdminComponent() {
       )
     );
   }
+
+  // LOAD MEMBERS
+  useEffect(() => {
+    setLoading(true);
+    fetchOpStatus();
+  }, []);
   
   // LOAD MEMBERS
   useEffect(() => {
+    setLoading(true);
+
     async function fetchMembers() {
       const res = await fetch(`/api/admin/members?page=${page}&limit=30`, {
         credentials: "include",
@@ -167,15 +210,17 @@ export default function AdminComponent() {
         <div className="flex justify-between">
           {/* OPEN BUTTON */}
           <button
-            onClick={() => setOpen(!open)}
+            onClick={changeOpStatus}
+            disabled={loading}
             className={`relative w-36 h-10 rounded-full inset-shadow-sm/20 cursor-pointer transition ${
-              open ? "bg-green-500" : "bg-paragraph/10"
+              opStatus.operasional ? "bg-green-500" : "bg-paragraph/10"
             }`}
           >
-            <span className="font-mulish font-black text-background">{open ? "BUKA" : "TUTUP"}</span>
+            <span className="font-mulish font-black text-background">{opStatus.operasional ? "BUKA" : "TUTUP"}</span>
             <div
               className={`absolute top-0.5 h-9 w-9 rounded-full bg-background shadow-sm/20 transition-transform duration-200 ${
-                open ? "translate-x-26.5" : "translate-x-0.5"
+                // loading ? "hidden" :
+                opStatus.operasional ? "translate-x-26.5" : "translate-x-0.5"
               }`}
             />
           </button>

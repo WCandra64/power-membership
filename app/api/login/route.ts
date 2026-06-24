@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { login } from "@/lib/auth";
 import { createToken } from "@/lib/session";
 
+// NON UI LOGIN API
 export async function POST(req: Request) {
   const { username, password } = await req.json();
 
@@ -16,6 +17,8 @@ export async function POST(req: Request) {
 
   const token = await createToken(
     user.id,
+    user.id_member,
+    username,
     user.role
   );
 

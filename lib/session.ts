@@ -7,10 +7,14 @@ const secret = new TextEncoder().encode(
 
 export async function createToken(
   id: number,
+  memberId: number,
+  username: string,
   role: string
 ) {
   return await new SignJWT({
     id,
+    memberId,
+    username,
     role,
   })
     .setProtectedHeader({

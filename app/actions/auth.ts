@@ -20,6 +20,8 @@ export async function loginAction(prevState: any, formData: FormData) {
 
   const token = await createToken(
     user.id,
+    user.role === "admin" ? 0 : user.member_id,
+    username,
     user.role
   );
 
@@ -29,9 +31,9 @@ export async function loginAction(prevState: any, formData: FormData) {
     sameSite: "lax",
   });
 
-  if (user.role === "admin") {
-    redirect("/admin");
-  }
+  // if (user.role === "admin") {
+  //   redirect("/admin");
+  // }
 
-  redirect("/member/"+username);
+  // redirect("/member/"+username);
 }

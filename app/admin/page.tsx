@@ -1,9 +1,9 @@
-import AdminComponent from "@/components/ClientAdmin";
+import AdminPage from "@/components/ClientAdmin";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
 
-export default async function AdminPage() {
+export default async function AdminServer() {
   const session = await getSession();
 
   if (!session) {
@@ -15,6 +15,6 @@ export default async function AdminPage() {
   }
   
   return (
-    <AdminComponent />
+    <AdminPage />
   );
 }

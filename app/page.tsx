@@ -3,92 +3,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faChevronDown, faClock, faLocationDot } from "@fortawesome/free-solid-svg-icons";
-import ScrollTop from "@/components/ScrollTop";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { getOperationalStatus } from "@/lib/operationalStatus";
 
-export default function Home() {
+export default async function Home() {
 
-  let op = false;
-  let sesi = 0;
-  let pengumuman: string | undefined = 'Lorem ipsum';
-  const localTime = new Date().toLocaleString('en-US', {timeZone: 'Asia/Jakarta'});
-  const waktu = new Date(localTime);
-  // const waktu = new Date("2026-04-09T06:59:00Z");
-  const jam = new Date("2026-06-12T14:00:00Z").getHours();
-
- 
-  let jadwal = {
-    id: 0,
-    tgl: new Date("2026-04-12T14:00:00Z"),
-    sesi: '',
-    pengumuman: 'tesssss'
-  };
-  let manual = {
-    id: 0,
-    mulai: '06:50:09',
-    akhir: '12:00:00',
-    status: false
-  };
-
-  const isToday = jadwal.tgl.toDateString() === waktu.toDateString();
-
-
-  function setSesi(){
-    return (jam >= 7 && jam < 11) ? 1 : (jam >= 15 && jam < 21) ? 2 : 0;
-  }
-
-  function setOperasional(s: string) {
-
-    // 1. Check Manual Override first (Highest Priority)
-    if (isToday && (jadwal.id === manual.id)) {
-      // Direct string comparison "08:59:00" >= "06:50:09" works perfectly
-      if (jam >= parseInt(manual.mulai) && jam < parseInt(manual.akhir)) {
-        return manual.status;
-      }
-    }
-
-    // 2. Check Session Exclusions (Second Priority)
-    // If today is a restricted day and this session is in the "closed" list
-    if (isToday && jadwal.sesi.includes(s)) {
-      return false;
-    }
-
-    // 3. Default Fallback (Normal Operation)
-    // If sesi is 1 or 2, it returns true. If 0, it returns false.
-    return sesi !== 0;
-  }
-
-  function showPengumuman() {
-    if (isToday) return jadwal.pengumuman;
-  }
-
-  sesi = setSesi();
-  const sesiString = sesi.toString();
-  console.log('sesi sekarang = ',sesi);
-  op = setOperasional(sesiString);
-  pengumuman = showPengumuman() || '';
-  pengumuman = "lorem ipsum";
-  console.log(pengumuman)
-
-  console.log(jadwal.sesi.includes(sesiString));
-
-  console.log('');
-
-  console.log('tanggal jadwal = ',jadwal.tgl);
-  console.log('tanggal sekarang = ',waktu);
-  console.log('is jadwal now = ',(jadwal.tgl.getDate() == waktu.getDate()));
-  console.log('\njadwal override = ',(jadwal.id === manual.id));
-  console.log('means = ',jadwal.pengumuman);
-  console.log('override mulai = ',manual.mulai,parseInt(manual.mulai));
-  console.log('override akhir = ',manual.akhir,parseInt(manual.akhir));
-  console.log('jam sekarang = ',waktu.getHours());
-  console.log('is override now = ',(jam >= parseInt(manual.mulai) && jam < parseInt(manual.akhir)));
-  console.log('override status = ',manual.status);
-  console.log('\njadwal sesi exist = ',(jadwal.sesi!='0'));
-  console.log('jadwal sesi = ',jadwal.sesi);
-  console.log('sesi sekarang = ',sesi);
-  console.log('is jadwal sesi now = ',(jadwal.sesi.includes(sesiString)));
-  console.log('\nstatus = ',op,'\n=========');
+  const opStatus = await getOperationalStatus();
+  console.log(opStatus);
 
   return (
     <main className="h-[calc(100vh-theme(spacing.12))] overflow-y-scroll snap-y snap-mandatory scroll-smooth custom-scrollbar">
@@ -170,7 +91,11 @@ export default function Home() {
         {/* STATUS */}
         <div className="flex flex-col gap-2 justify-center px-6 mt-6 w-full text-center">
           <div className="w-full flex justify-center items-center">
-            {op ? (
+            {
+            // loading? (
+            //   <div className="w-fit flex items-center gap-4 bg-paragraph/10 text-paragraph/40 border border-paragraph/40 px-6 py-1 rounded-full text-md font-bold tracking-wider" />
+            // ) :
+            opStatus.operasional ? (
               <div className="w-full flex justify-center items-center gap-6 ">
                 <div className="flex items-center gap-4 bg-green-100 text-green-500 border border-green-500 px-6 py-1 rounded-full text-md font-bold tracking-wider">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -178,7 +103,7 @@ export default function Home() {
                 </div>
 
                 <p className="text-xs mt-2 italic">
-                  <span className="font-bold">40</span> orang sedang latihan
+                  <span className="font-bold">{opStatus.pengunjung}</span> orang sedang latihan
                 </p>
               </div>
             ) : (
@@ -198,7 +123,7 @@ export default function Home() {
           </div>
 
           <p className="text-xs tracking-wide text-prime">
-            {pengumuman}
+            {opStatus.pengumuman || ""}
           </p>
         </div>
 
@@ -217,7 +142,7 @@ export default function Home() {
 
         <div className="flex w-full gap-2 px-6 overflow-x-auto scrollbar-hidden scroll-smooth">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex-none relative w-full h-[56vh] bg-slate-600 rounded-xs border-2 border-stroke select-none">
+            <div key={i} className="flex-none relative w-full h-[56vh] bg-slate-400 rounded-xs border-2 border-stroke select-none">
               <img src="/hero.png" alt="" className="w-full h-full object-cover" />
               <div className="absolute flex flex-col gap-1 bottom-0 bg-stroke/80 w-full px-4 py-2">
                 <h4 className="font-extrabold text-prime">Lorem Ipsum</h4>
