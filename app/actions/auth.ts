@@ -20,7 +20,7 @@ export async function loginAction(prevState: any, formData: FormData) {
 
   const token = await createToken(
     user.id,
-    user.role === "admin" ? 0 : user.member_id,
+    user.role === "admin" ? 0 : user.id_member,
     username,
     user.role
   );
