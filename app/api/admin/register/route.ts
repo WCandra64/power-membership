@@ -9,8 +9,8 @@ export async function POST(req: Request) {
     const {
       name,
       noHp,
-      photo,
-      deletePhoto,
+      photoUrl,
+      photoId,
       startMembership,
       endMembership,
     } = await req.json();
@@ -23,10 +23,10 @@ export async function POST(req: Request) {
     // 1. CREATE MEMBER
     const [memberResult]: any = await db.query(
       `
-      INSERT INTO members (nama, no_telp, foto, hapus_foto, waktu_daftar, terdaftar)
+      INSERT INTO members (nama, no_telp, foto_url, foto_id, waktu_daftar, terdaftar)
       VALUES (?, ?, ?, ?, ?, TRUE)
       `,
-      [name, noHp, photo, deletePhoto, now]
+      [name, noHp, photoUrl, photoId, now]
     );
 
     const memberId = memberResult.insertId;

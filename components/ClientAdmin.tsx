@@ -7,10 +7,27 @@ import { faAngleDown, faCalendarAlt, faCaretDown, faCaretUp, faCertificate, faCh
 import PrimaryButton from '@/components/PrimaryButton'
 import ScrollTop from "@/components/ScrollTop";
 
+type Member = {
+  id: number,
+  name: string,
+  phone: string,
+  photo: string,
+  username: string,
+
+  msStart: Date,
+  msEnd: Date,
+  msStatus: boolean,
+
+  lastCheckin: Date | null,
+  lastCheckout: Date | null,
+
+  showImage: boolean
+}
+
 
 export default function AdminComponent() {
 
-  const [members, setMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
@@ -33,18 +50,18 @@ export default function AdminComponent() {
   const [sortOrder, setSortOrder] = useState<"def" | "asc" | "dsc">("def");
 
   const [category, setCategory] = useState([
-    {
-      name: "Baru",
-      isActive: false,
-      icon: faCertificate,
-      defaultColor: "bg-fuchsia-100",
-      activeColor: "bg-fuchsia-500",
-      hoveror: "hover:bg-fuchsia-500",
-      iconColor: "text-fuchsia-500"
-    },
+    // {
+    //   name: "Baru",
+    //   isActive: false,
+    //   icon: faCertificate,
+    //   defaultColor: "bg-fuchsia-100",
+    //   activeColor: "bg-fuchsia-500",
+    //   hoveror: "hover:bg-fuchsia-500",
+    //   iconColor: "text-fuchsia-500"
+    // },
     {
       name: "Aktif",
-      isActive: false,
+      isActive: true,
       icon: faCheckCircle,
       defaultColor: "bg-green-100",
       activeColor: "bg-green-500",
@@ -62,7 +79,7 @@ export default function AdminComponent() {
     },
     {
       name: "Member",
-      isActive: true,
+      isActive: false,
       icon: faUsers,
       defaultColor: "bg-prime/10",
       activeColor: "bg-prime",
@@ -79,9 +96,51 @@ export default function AdminComponent() {
       iconColor: "text-taupe-500"
     }
   ]);
+
+  // LAST TRAINING
+  function timePassed(date: string | Date) {
+    const now = new Date();
+    const past = new Date(date);
+
+    const diffMs = now.getTime() - past.getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 1) return "hari ini";
+    if (diffDays < 7) return `${diffDays} hari lalu`;
+
+    const diffWeeks = Math.floor(diffDays / 7);
+
+    if (diffDays < 30) return `${diffWeeks} minggu lalu`;
+
+    const diffMonths = Math.floor(diffDays / 30);
+
+    return `${diffMonths} bulan lalu`;
+  }
+
+  // TRAINING SESSION
+  function isTraining(checkIn: string | Date | null, checkOut: string | Date | null) {
+    if (!checkIn || !checkOut) return false;
+
+    const now = Date.now();
+
+    return (
+      now >= new Date(checkIn).getTime() &&
+      now <= new Date(checkOut).getTime()
+    );
+  }
+
+  // SHOW IMAGE
+  function handleShowImage(id: number) {
+    setMembers(prev =>
+      prev.map(m =>
+        m.id === id ? { ...m, showImage: true } : m
+      )
+    );
+  }
   
+  // LOAD MEMBERS
   useEffect(() => {
-    async function load() {
+    async function fetchMembers() {
       const res = await fetch(`/api/admin/members?page=${page}&limit=30`, {
         credentials: "include",
       });
@@ -89,11 +148,16 @@ export default function AdminComponent() {
       const json = await res.json();
       console.log(json);
 
-      setMembers(json.data);
+      setMembers(
+        json.data.map((m: Member) => ({
+          ...m,
+          showImage: false,
+        }))
+      );
       setLoading(false);
     }
 
-    load();
+    fetchMembers();
   }, [page]);
 
   return (
@@ -215,63 +279,62 @@ export default function AdminComponent() {
 
         {/* MEMBER LIST */}
         <div className="flex flex-col items-center justify-end gap-2 w-full h-full">
-          {
-            // user.filter((u) => u.username !== "admin").map((u, index) => (
-            Array.from({ length: 2 }).map((_, i) => (
-              <Link
-                key={i}
-                href={`/admin/member/${member.username}`}
-                className="flex items-center gap-4 w-full bg-background rounded-sm shadow-md p-4 border-2 border-stroke select-none"
-              >
-                <img src={member.img} alt="" className="w-24 h-24 object-cover" />
 
-                <div className="flex flex-col gap-0">
-                  <span className="font-semibold text-xs italic">#{member.username}</span>
-                  <h4 className="font-extrabold text-md">{member.name}</h4>
-                  <span className="text-xs tracking-widest">07 Jun '26 - 06 Jul '26</span>
-                  <span className="text-xs font-extralight">Latihan 2 hari lalu</span>
+          {loading?
+            // LAZY LOAD
+            Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4 w-full bg-background rounded-sm shadow-md p-4 border-2 border-stroke select-none">
+                <div className="w-24 h-24 flex-none bg-slate-400 animate-pulse" />
 
-                  <div className="text-xs/5 pt-4 flex gap-2 font-mulish font-semibold">
-                    <span className="px-4 bg-green-100 text-green-500 rounded-full">Aktif</span>
-                    <span className="px-4 bg-cyan-100 text-cyan-500 rounded-full">Latihan</span>
-                    <span className="px-4 bg-fuchsia-100 text-fuchsia-500 rounded-full">Baru</span>
-                    {/* <span className="px-4 bg-taupe-100 text-taupe-500 rounded-full">Tidak Aktif</span> */}
-                  </div>
+                <div className="flex flex-col gap-1 w-full">
+                  <div className="bg-slate-400 h-3 w-24 rounded-sm animate-pulse" />
+                  <div className="bg-slate-400 h-5 w-32 rounded-sm animate-pulse" />
+                  <div className="bg-slate-400 h-3 w-46 rounded-sm animate-pulse" />
+                  <div className="bg-slate-400 h-3 w-36 rounded-sm animate-pulse" />
+
+                  <div className="bg-slate-400 w-20 h-4 rounded-full mt-4 animate-pulse" />
                 </div>
                 
-              </Link>
+              </div>
             ))
-          }
-
-          {members.map((m, i) => (
+            :
+            // ACTUAL MEMBERS
+            members.map((m, i) => (
               <Link
                 key={i}
                 href={`/admin/member/${m.username}`}
                 className="flex items-center gap-4 w-full bg-background rounded-sm shadow-md p-4 border-2 border-stroke select-none"
               >
-                <img src={member.img} alt="" className="w-24 h-24 object-cover" />
+                <img
+                  onClick={(e) => {e.preventDefault(); handleShowImage(m.id)}}
+                  src={m.showImage? m.photo : "/user.png"}
+                  className="w-24 h-24 object-cover"
+                />
 
                 <div className="flex flex-col gap-0">
                   <span className="font-semibold text-xs italic">#{m.username}</span>
                   <h4 className="font-extrabold text-md">{m.name}</h4>
                   <span className="text-xs tracking-widest">
                     {new Date(m.msStart).toLocaleDateString('id-ID', {dateStyle: 'medium'})} - {new Date(m.msEnd).toLocaleDateString('id-ID', {dateStyle: 'medium'})}
-                    </span>
-                  <span className="text-xs font-extralight">Latihan {m.lastVisit}</span>
+                  </span>
+                  <span className="text-xs font-extralight">Latihan {m.lastCheckin? timePassed(m.lastCheckin) : "belum tercatat"}</span>
 
                   <div className="text-xs/5 pt-4 flex gap-2 font-mulish font-semibold">
-                    {m.membershipStatus && 
+                    {m.msStatus ? 
                       <span className="px-4 bg-green-100 text-green-500 rounded-full">Aktif</span>
+                      :
+                      <span className="px-4 bg-taupe-100 text-taupe-500 rounded-full">Tidak Aktif</span>
                     }
-                    {/* <span className="px-4 bg-cyan-100 text-cyan-500 rounded-full">Latihan</span>
-                    <span className="px-4 bg-fuchsia-100 text-fuchsia-500 rounded-full">Baru</span> */}
-                    {/* <span className="px-4 bg-taupe-100 text-taupe-500 rounded-full">Tidak Aktif</span> */}
+                    {isTraining(m.lastCheckin, m.lastCheckout) &&
+                      <span className="px-4 bg-cyan-100 text-cyan-500 rounded-full">Latihan</span>
+                    }
                   </div>
                 </div>
                 
               </Link>
             ))
           }
+          
         </div>
       </div>
 

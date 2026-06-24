@@ -120,33 +120,34 @@ export default function AddMemberPage() {
     });
   };
 
+  async function uploadImage() {
+    const publicId = `${name.toLowerCase().replace(/\s+/g, "")}-${Date.now()}`;
+
+    const formData = new FormData();
+    formData.append("file", photoFile!);
+    formData.append("publicId", publicId);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    })
+
+    return await res.json();
+  }
+
   async function registerMember() {
     try {
       setLoading(true);
 
-      // upload image
-
-      const formData = new FormData();
-      formData.append("key", process.env.NEXT_PUBLIC_IMGBB_KEY!);
-      formData.append("image", photoFile!);
-
-      const imageRes = await fetch(
-        `https://api.imgbb.com/1/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      const imageData = await imageRes.json();
+      // UPLOAD IMAGE
+      const imageData = await uploadImage();
 
       console.log(imageData);
 
-      const photo = imageData.data.url;
-      const deletePhoto = imageData.data.delete_url;
+      const photoUrl = imageData.secure_url;
+      const photoId = imageData.public_id;
 
-      // create member
-
+      // CREATE MEMBER
       const res = await fetch("/api/admin/register", {
         method: "POST",
         headers: {
@@ -155,8 +156,8 @@ export default function AddMemberPage() {
         body: JSON.stringify({
           name,
           phone,
-          photo,
-          deletePhoto,
+          photoUrl,
+          photoId,
           startMembership,
           endMembership,
         }),
@@ -199,7 +200,7 @@ export default function AddMemberPage() {
   return (
     <main className="w-full h-[calc(100vh-theme(spacing.12))] px-6 bg-foreground">
       <div className="flex flex-col items-center justify-end w-full h-full py-4">
-        <div className="flex-1 relative min-h-0 max-h-46 py-4 hidden">
+        <div className="flex-1 relative min-h-0 max-h-46 py-4">
           <img src="/power.png" alt="Power Gym" className="object-cover w-full h-full" />
         </div>
 
@@ -267,7 +268,7 @@ export default function AddMemberPage() {
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*"
+              accept=".jpg,.jpeg,.png,.webp"
               onChange={handlePhotoChange}
               className="hidden"
             />
@@ -280,7 +281,7 @@ export default function AddMemberPage() {
             {/* INPUT IMAGE */}
             <div onClick={() => fileInputRef.current?.click()} className="flex flex-col gap-1 cursor-pointer">
               {photoFile?
-                <div className="relative w-32 h-32 border-2 border-stroke ">
+                <div className="relative w-46 h-46 border-2 border-stroke ">
                   <img
                     src={URL.createObjectURL(photoFile)}
                     alt={photoFile.name}

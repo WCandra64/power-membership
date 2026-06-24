@@ -59,6 +59,7 @@ export async function getMembers(page = 1, limit = 30) {
       m.id,
       m.nama AS name,
       m.no_telp AS phone,
+      m.foto_url AS photo,
       u.username,
 
       ms.tgl_mulai AS msStart,
@@ -68,9 +69,10 @@ export async function getMembers(page = 1, limit = 30) {
         WHEN CURDATE() BETWEEN ms.tgl_mulai AND ms.tgl_kadaluarsa
         THEN 'ACTIVE'
         ELSE 'EXPIRED'
-      END AS membershipStatus,
+      END AS msStatus,
 
-      v.waktu_checkin AS lastVisit
+      v.waktu_mulai AS lastCheckin,
+      v.waktu_akhir AS lastCheckout
 
     FROM members m
     LEFT JOIN users u ON u.id_member = m.id
@@ -89,8 +91,8 @@ export async function getMembers(page = 1, limit = 30) {
     LEFT JOIN (
       SELECT *
       FROM visits
-      WHERE (id_member, waktu_checkin) IN (
-        SELECT id_member, MAX(waktu_checkin)
+      WHERE (id_member, waktu_mulai) IN (
+        SELECT id_member, MAX(waktu_mulai)
         FROM visits
         GROUP BY id_member
       )
