@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { localTime } from "./time";
 
 export type JadwalManual = {
   id: number;
@@ -15,24 +16,24 @@ export type OperationalStatus = {
 };
 
 export async function getOperationalStatus(): Promise<OperationalStatus> {
-  const now = new Date();
+  const now = localTime();
 
   const hour = now.getHours();
 
   let sesi: 0 | 1 | 2 = 0;
-  let waktuAkhir: Date | null = null;
+  let waktuAkhir = new Date(now);
 
-  // Normal schedule
-  if (hour >= 7 && hour < 11) {
-    sesi = 1;
+  if (hour < 11) {
+    if (hour >= 7) sesi = 1;
 
-    waktuAkhir = new Date(now);
     waktuAkhir.setHours(11, 0, 0, 0);
-  } else if (hour >= 15 && hour < 21) {
-    sesi = 2;
+  } else if (hour < 21) {
+    if (hour >= 15) sesi = 2;
 
-    waktuAkhir = new Date(now);
     waktuAkhir.setHours(21, 0, 0, 0);
+  } else {
+    waktuAkhir.setDate(waktuAkhir.getDate() + 1);
+    waktuAkhir.setHours(11, 0, 0, 0);
   }
 
   // Default operation
@@ -63,10 +64,11 @@ async function getActiveJadwal() {
     `
     SELECT *
     FROM jadwal_manual
-    WHERE NOW() BETWEEN waktu_mulai AND waktu_akhir
+    WHERE ? BETWEEN waktu_mulai AND waktu_akhir
     ORDER BY waktu_mulai DESC
     LIMIT 1
-    `
+    `,
+    [localTime()]
   );
 
   return rows as JadwalManual[];
@@ -77,8 +79,9 @@ async function getCurrentVisitors() {
     `
     SELECT COUNT(*) AS total
     FROM visits
-    WHERE NOW() BETWEEN waktu_mulai AND waktu_akhir
-    `
+    WHERE ? BETWEEN waktu_mulai AND waktu_akhir
+    `,
+    [localTime()]
   );
 
   const total = (rows as { total: number }[])[0].total;

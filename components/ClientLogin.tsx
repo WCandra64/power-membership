@@ -131,8 +131,10 @@ export default function LoginPage() {
                   <span className={`text-prime ${!errors.username && "hidden"}`}>{" (Username harus diisi!)"}</span>
                 </label>
                 <input
+                  type="text"
                   name="username"
                   placeholder="Username"
+                  autoComplete="current-username"
                   className={`
                     w-full rounded-sm px-4 py-2 text-sm
                     border-1 border-stroke/40 focus:outline-2 outline-stroke
@@ -158,9 +160,10 @@ export default function LoginPage() {
                   <span className={`text-prime ${!errors.password && "hidden"}`}>{" (Pasword harus diisi!)"}</span>
                 </label>
                 <input
+                  type="password"
                   name="password"
                   placeholder="Password"
-                  type="password"
+                  autoComplete="current-password"
                   className={`
                     w-full rounded-sm px-4 py-2 text-sm
                     border-1 border-stroke/40 focus:outline-2 outline-stroke

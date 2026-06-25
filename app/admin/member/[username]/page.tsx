@@ -5,6 +5,7 @@ import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faSignOutAlt, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
+import { localTime } from "@/lib/time";
 
 
 // type Props = {
@@ -29,11 +30,13 @@ export default function MemberAdmin(
 
   const [member, setMember] = useState(defMember);
 
+  const now = localTime();
+
   // FORMAT PHONE
   const phone = `+62 ${member.phone.slice(2, 5)}-${member.phone.slice(6, 10)}-${member.phone.slice(10)}`;
 
   // DETERMINE MEMBERSHIP
-  const today = new Date().setHours(0,0,0,0)
+  const today = now.setHours(0,0,0,0)
   const activeMembership = today >= member.activeDate.setHours(0,0,0,0) && today <= member.expiredDate.setHours(0,0,0,0);
 
   const [zoomImg, setZoomImg] = useState(false);
@@ -61,7 +64,7 @@ export default function MemberAdmin(
   const [endMembership, setEndMembership] = useState("");
   
   useEffect(() => {
-    updateMembership(new Date());
+    updateMembership(now);
     console.log(member.expiredDate)
   }, [])
 
@@ -178,7 +181,7 @@ export default function MemberAdmin(
                   type="date"
                   name="startMembershipship"
                   value={startMembership}
-                  onChange={(e) => updateMembership(!isNaN(new Date(e.target.value).getTime()) ? new Date(e.target.value) : new Date())}
+                  onChange={(e) => updateMembership(!isNaN(new Date(e.target.value).getTime()) ? new Date(e.target.value) : now)}
                   className="rounded-lg border px-3 py-2"
                 />
               </div>
@@ -197,7 +200,7 @@ export default function MemberAdmin(
               </div>
               
               <div className="flex gap-2 pt-6">
-                <BareButton onClick={() => {setMembershipUpdate(false); updateMembership(new Date());}}>Batal</BareButton>
+                <BareButton onClick={() => {setMembershipUpdate(false); updateMembership(now);}}>Batal</BareButton>
                 <PrimaryButton>Perpanjang</PrimaryButton>
               </div>
             </div>

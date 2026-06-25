@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { getOperationalStatus } from "@/lib/operationalStatus";
+import { localTime } from "@/lib/time";
 
 export async function POST() {
   try {
@@ -23,24 +24,17 @@ export async function POST() {
       );
     }
 
-    console.log({
-      session,
-      status,
-    });
-
-    console.log({
-      memberId: session?.memberId,
-    });
+    const now = localTime();
 
     const [rows] = await db.execute(
       `
       SELECT id
       FROM visits
       WHERE id_member = ?
-      AND NOW() BETWEEN waktu_mulai AND waktu_akhir
+      AND ? BETWEEN waktu_mulai AND waktu_akhir
       LIMIT 1
       `,
-      [session.memberId as number]
+      [session.memberId as number, now]
     );
 
     const active = rows as { id: number }[];
@@ -52,27 +46,17 @@ export async function POST() {
       );
     }
 
-    const akhir = new Date();
-
-    if (status.sesi === 1) {
-      akhir.setHours(11, 0, 0, 0);
-    } else if (status.sesi === 2) {
-      akhir.setHours(21, 0, 0, 0);
-    } else {
-      akhir.setDate(akhir.getDate() + 1);
-      akhir.setHours(11, 0, 0, 0);
-    }
-
     await db.execute(
       `
       INSERT INTO visits (
         id_member,
         waktu_mulai,
-        waktu_akhir
+        waktu_akhir,
+        created_at
       )
-      VALUES (?, NOW(), ?)
+      VALUES (?, ?, ?, ?)
       `,
-      [session.memberId as number, akhir]
+      [session.memberId as number, now, status.waktuAkhir, now]
     );
 
     return NextResponse.json({

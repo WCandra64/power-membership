@@ -7,8 +7,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { faRemove } from "@fortawesome/free-solid-svg-icons";
+import { localTime } from "@/lib/time";
 
 export default function AddMemberPage() {
+
+  const now = localTime();
   
   const [loading, setLoading] = useState(false);
 
@@ -60,7 +63,7 @@ export default function AddMemberPage() {
   const [endMembership, setEndMembership] = useState("");
   
   useEffect(() => {
-    setMembership(new Date());
+    setMembership(now);
   }, [])
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -340,7 +343,7 @@ export default function AddMemberPage() {
                 type="date"
                 name="startMembershipship"
                 value={startMembership}
-                onChange={(e) => setMembership(!isNaN(new Date(e.target.value).getTime()) ? new Date(e.target.value) : new Date())}
+                onChange={(e) => setMembership(!isNaN(new Date(e.target.value).getTime()) ? new Date(e.target.value) : now)}
                 className="rounded-lg border px-3 py-2"
               />
             </div>
@@ -362,7 +365,7 @@ export default function AddMemberPage() {
               <BareButton
                 onClick={() => {
                   setMembershipDate(false);
-                  setMembership(new Date());
+                  setMembership(now);
                 }}
               >
                 Batal

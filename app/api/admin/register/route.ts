@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { db } from "@/lib/db";
+import { localTime } from "@/lib/time";
 
 export async function POST(req: Request) {
   let conn;
@@ -14,7 +15,9 @@ export async function POST(req: Request) {
       startMembership,
       endMembership,
     } = await req.json();
-    const now = new Date();
+    const now = localTime();
+
+    const date = now.toISOString().slice(0, 10);
 
     conn = await db.getConnection();
 
@@ -23,10 +26,10 @@ export async function POST(req: Request) {
     // 1. CREATE MEMBER
     const [memberResult]: any = await db.query(
       `
-      INSERT INTO members (nama, no_telp, foto_url, foto_id, waktu_daftar, terdaftar)
-      VALUES (?, ?, ?, ?, ?, TRUE)
+      INSERT INTO members (nama, no_telp, foto_url, foto_id, waktu_daftar, terdaftar, created_at)
+      VALUES (?, ?, ?, ?, ?, TRUE, ?)
       `,
-      [name, noHp, photoUrl, photoId, now]
+      [name, noHp, photoUrl, photoId, now, now]
     );
 
     const memberId = memberResult.insertId;
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
     const minutes = String(now.getMinutes()).padStart(2, "0");
 
     const [rows]: any = await db.query(
-      "SELECT COUNT(*) as count FROM users WHERE DAY(created_at) = DAY(NOW())"
+      "SELECT COUNT(*) as count FROM users WHERE DATE(created_at) = ?", [now]
     );
     const counter = String(rows[0].count + 1).padStart(2, "0");
 
@@ -48,16 +51,16 @@ export async function POST(req: Request) {
 
     // 2. CREATE USER
     await db.query(
-      `INSERT INTO users (id_member, username, password, role)
-       VALUES (?, ?, ?, 'member')`,
-      [memberId, username, hashedPassword]
+      `INSERT INTO users (id_member, username, password, role, created_at)
+       VALUES (?, ?, ?, 'member', ?)`,
+      [memberId, username, hashedPassword, now]
     );
 
     // 3. CREATE MEMBERSHIP
     await db.query(
-      `INSERT INTO membership (id_member, tgl_mulai, tgl_kadaluarsa)
-       VALUES (?, ?, ?)`,
-      [memberId, startMembership, endMembership]
+      `INSERT INTO membership (id_member, tgl_mulai, tgl_kadaluarsa, created_at)
+       VALUES (?, ?, ?, ?)`,
+      [memberId, startMembership, endMembership, now]
     );
 
     await conn.commit();

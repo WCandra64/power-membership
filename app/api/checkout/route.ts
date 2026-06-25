@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { localTime } from "@/lib/time";
 
 export async function PATCH() {
   const session = await getSession();
@@ -12,16 +13,18 @@ export async function PATCH() {
     );
   }
 
+  const now = localTime();
+
   const [rows] = await db.execute(
     `
     SELECT id
     FROM visits
     WHERE id_member = ?
-    AND NOW() BETWEEN waktu_mulai AND waktu_akhir
+    AND ? BETWEEN waktu_mulai AND waktu_akhir
     ORDER BY waktu_mulai DESC
     LIMIT 1
     `,
-    [session.memberId as number]
+    [session.memberId as number, now]
   );
 
   const active = rows as { id: number }[];
@@ -36,10 +39,10 @@ export async function PATCH() {
   await db.execute(
     `
     UPDATE visits
-    SET waktu_akhir = NOW()
+    SET waktu_akhir = ?, updated_at = ?
     WHERE id = ?
     `,
-    [active[0].id]
+    [now, now, active[0].id]
   );
 
   return NextResponse.json({
