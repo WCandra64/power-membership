@@ -140,7 +140,7 @@ export default function LoginPage() {
                   placeholder="Username"
                   autoComplete="current-username"
                   className={`
-                    w-full rounded-sm px-4 py-4 text-sm
+                    w-full rounded-sm px-4 py-3 text-sm
                     border-1 border-stroke/40 focus:outline-2 outline-stroke
                     ${username ? "outline-2 bg-background" : "bg-paragraph/5"}
                     ${errors.username && "bg-prime/20"}
@@ -163,7 +163,7 @@ export default function LoginPage() {
                   Password
                   <span className={`text-prime ${!errors.password && "hidden"}`}>{" (Pasword harus diisi!)"}</span>
                 </label>
-                <div className={`flex items-center gap-2 w-full rounded-sm px-4 py-4 text-md border-1 border-stroke/40 outline-stroke focus-within:outline-2 ${password ? "outline-2 bg-background" : "bg-paragraph/5"} ${errors.password && "bg-prime/20"}`}>
+                <div className={`flex items-center gap-2 w-full rounded-sm px-4 py-3 text-md border-1 border-stroke/40 outline-stroke focus-within:outline-2 ${password ? "outline-2 bg-background" : "bg-paragraph/5"} ${errors.password && "bg-prime/20"}`}>
 
                   <input
                     type={showPassword ? "text" : "password"}
