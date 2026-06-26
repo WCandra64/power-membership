@@ -163,7 +163,7 @@ export default function LoginPage() {
                   Password
                   <span className={`text-prime ${!errors.password && "hidden"}`}>{" (Pasword harus diisi!)"}</span>
                 </label>
-                <div className={`flex items-center gap-2 w-full rounded-sm px-4 py-4 text-sm border-1 border-stroke/40 outline-stroke focus-within:outline-2 ${password ? "outline-2 bg-background" : "bg-paragraph/5"} ${errors.password && "bg-prime/20"}`}>
+                <div className={`flex items-center gap-2 w-full rounded-sm px-4 py-4 text-md border-1 border-stroke/40 outline-stroke focus-within:outline-2 ${password ? "outline-2 bg-background" : "bg-paragraph/5"} ${errors.password && "bg-prime/20"}`}>
 
                   <input
                     type={showPassword ? "text" : "password"}
@@ -195,7 +195,7 @@ export default function LoginPage() {
           </form>
 
           {showToast && (
-            <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-rose-900 text-white px-6 py-4 rounded-sm shadow-xl text-background text-center z-50">
+            <div className="fixed top-16 left-1/2 -translate-x-1/2 bg-rose-900 text-white px-6 py-4 rounded-md shadow-xl text-background text-center z-50">
               {state?.error}
               {/* {state?.error ? state.error : (errors.username || errors.password) ? "Username dan password harus diisi!" : errors.validation} */}
               {/* {errors.username ? errors.username : errors.password ? errors.password : errors.validation} */}
