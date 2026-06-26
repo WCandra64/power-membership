@@ -28,6 +28,8 @@ export default function LoginPage() {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const [loginDisabled, setLoginDisabled] = useState(false);
+
   const [errors, setErrors] = useState({
     username: false,
     password: false,
@@ -105,6 +107,10 @@ export default function LoginPage() {
 
     setErrors({ username: username? false : true, password: password? false : true });
   }, [username, password])
+
+  useEffect(() => {
+    setLoginDisabled(pending || !username || !password ? true : false);
+  }, [pending, password, username])
 
   return (
     <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6 pb-4">
@@ -187,7 +193,7 @@ export default function LoginPage() {
             <div className="w-full pt-12">
               <PrimaryButton
                 type="submit"
-                disabled={pending || !username || !password}
+                disabled={loginDisabled}
               >
                 {pending? "Loading..." : "Log In"}
               </PrimaryButton>
