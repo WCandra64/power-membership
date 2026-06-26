@@ -107,7 +107,7 @@ export default function LoginPage() {
   }, [username, password])
 
   return (
-    <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6">
+    <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6 pb-4">
       {pending?
         <div className="flex flex-col gap-2 h-full justify-center items-center">
           <img src="/power.png" className="w-54 animate-pulse" />
@@ -184,7 +184,7 @@ export default function LoginPage() {
 
             </div>
 
-            <div className="w-full">
+            <div className="w-full pt-12">
               <PrimaryButton
                 type="submit"
                 disabled={pending || !username || !password}
