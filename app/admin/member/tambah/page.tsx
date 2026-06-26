@@ -201,7 +201,7 @@ export default function AddMemberPage() {
   }
 
   return (
-    <main className="w-full h-[calc(100vh-theme(spacing.12))] px-6 bg-foreground">
+    <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6 bg-foreground">
       <div className="flex flex-col items-center justify-end w-full h-full py-4">
         <div className="flex-1 relative min-h-0 max-h-46 py-4">
           <img src="/power.png" alt="Power Gym" className="object-cover w-full h-full" />
@@ -224,7 +224,7 @@ export default function AddMemberPage() {
             <input
               placeholder="Nama Member"
               className={`
-                w-full rounded-sm px-4 py-2 text-sm
+                w-full rounded-sm px-4 py-4 text-sm
                 border-1 border-stroke/40 focus:outline-2 outline-stroke
                 ${name ? "outline-2 bg-background" : "bg-paragraph/5"}
                 ${errors.name && "bg-prime/20"}
@@ -252,7 +252,7 @@ export default function AddMemberPage() {
               placeholder="Nomor Handphone (62812........)"
               type="tel"
               className={`
-                w-full rounded-sm px-4 py-2 text-sm
+                w-full rounded-sm px-4 py-4 text-sm
                 border-1 border-stroke/40 focus:outline-2 outline-stroke
                 ${phone ? "outline-2 bg-background" : "bg-paragraph/5"}
                 ${errors.phoneType && "bg-prime/20"}
@@ -300,7 +300,7 @@ export default function AddMemberPage() {
                     <FontAwesomeIcon size="xl" icon={faRemove}/>
                   </button>
                 </div>
-              : <span className={`text-left text-sm font-mulish underline hover:text-stroke text-prime font-bold`}>Masukkan foto member di sini.</span>
+              : <span className={`text-left text-md font-mulish underline hover:text-stroke text-prime font-bold`}>Masukkan foto member di sini.</span>
               }
             </div>
 
@@ -344,7 +344,7 @@ export default function AddMemberPage() {
                 name="startMembershipship"
                 value={startMembership}
                 onChange={(e) => setMembership(!isNaN(new Date(e.target.value).getTime()) ? new Date(e.target.value) : now)}
-                className="rounded-lg border px-3 py-2"
+                className="rounded-lg border px-3 py-4"
               />
             </div>
             
@@ -357,7 +357,7 @@ export default function AddMemberPage() {
                 onChange={(e) => {
                   setEndMembership(e.target.value);
                 }}
-                className="rounded-lg border px-3 py-2"
+                className="rounded-lg border px-3 py-4"
               />
             </div>
             

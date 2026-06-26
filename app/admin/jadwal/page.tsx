@@ -26,7 +26,7 @@ export default function JadwalPage() {
   console.log(sortedJadwal)
 
   return(
-    <main className="min-h-[calc(100vh-theme(spacing.12))] relative flex flex-col gap-8 py-4 px-6 justify-start items-center bg-foreground">
+    <main className="min-h-[calc(100dvh-theme(spacing.12))] relative flex flex-col gap-8 py-4 px-6 justify-start items-center bg-foreground">
       {/* FORM */}
       <div className="flex flex-col items-center justify-center gap-8 w-full p-4 bg-background border-2 border-stroke rounded-sm">
         <h1 className="font-black">Tambah Jadwal Tutup</h1>

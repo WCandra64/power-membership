@@ -156,7 +156,6 @@ export default function AdminPage() {
   // TRAINING SESSION
   function isTraining(checkIn: string | Date | null, checkOut: string | Date | null) {
     if (!checkIn || !checkOut) return false;
-    console.log(checkIn, checkOut);
 
     const now = Date.now();
 
@@ -206,7 +205,7 @@ export default function AdminPage() {
   }, [page]);
 
   return (
-    <main className="relative flex flex-col gap-6 w-full min-h-[calc(100vh-theme(spacing.12))] bg-foreground py-6">
+    <main className="relative flex flex-col gap-6 w-full min-h-[calc(100dvh-theme(spacing.12))] bg-foreground py-6">
 
       <div className="flex flex-col gap-4 px-6">
         <div className="flex justify-between">
@@ -318,7 +317,7 @@ export default function AdminPage() {
             </select>
           </div>
 
-          <Link href="/admin/member/daftar" className="flex gap-2 items-center bg-prime rounded-sm shadow-sm/40 p-2 text-background text-xs font-bold font-mulish hover:bg-paragraph cursor-pointer">
+          <Link href="/admin/member/tambah" className="flex gap-2 items-center bg-prime rounded-sm shadow-sm/40 p-2 text-background text-sm font-bold font-mulish hover:bg-paragraph cursor-pointer">
             <FontAwesomeIcon icon={faPlus} size="sm" className="w-2 text-background" />
             Tambah
           </Link>
@@ -385,7 +384,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 w-full max-w-md h-20 pointer-events-none">
+      <div className="fixed bottom-0 w-full max-w-3xl h-20 pointer-events-none">
         <div className="w-full h-full relative">
           <ScrollTop />
         </div>

@@ -113,7 +113,7 @@ export default function RegistrationPage() {
   }
 
   return (
-    <main className="w-full h-[calc(100vh-theme(spacing.12))] px-6">
+    <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6">
       <div className="flex flex-col items-center justify-end w-full h-full py-4">
         <div className="flex-1 relative min-h-0 max-h-46 py-4 hidden">
           <img src="/power.png" alt="Power Gym" className="object-cover w-full h-full" />

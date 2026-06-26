@@ -63,10 +63,10 @@ export async function getMembers(page = 1, limit = 30) {
       u.username,
 
       ms.tgl_mulai AS msStart,
-      ms.tgl_kadaluarsa AS msEnd,
+      ms.tgl_kedaluwarsa AS msEnd,
 
       CASE
-        WHEN CURDATE() BETWEEN ms.tgl_mulai AND ms.tgl_kadaluarsa
+        WHEN CURDATE() BETWEEN ms.tgl_mulai AND ms.tgl_kedaluwarsa
         THEN 'ACTIVE'
         ELSE 'EXPIRED'
       END AS msStatus,
@@ -80,8 +80,8 @@ export async function getMembers(page = 1, limit = 30) {
     LEFT JOIN (
       SELECT *
       FROM membership
-      WHERE (id_member, tgl_kadaluarsa) IN (
-        SELECT id_member, MAX(tgl_kadaluarsa)
+      WHERE (id_member, tgl_kedaluwarsa) IN (
+        SELECT id_member, MAX(tgl_kedaluwarsa)
         FROM membership
         GROUP BY id_member
       )

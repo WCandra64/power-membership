@@ -83,7 +83,7 @@ export default function MemberAdmin(
   // }, [startMembership])
 
   return (
-    <main className="h-[calc(100vh-theme(spacing.12))] relative flex flex-col gap-8 py-4 px-6 justify-end items-center bg-foreground">
+    <main className="h-[calc(100dvh-theme(spacing.12))] relative flex flex-col gap-8 py-4 px-6 justify-end items-center bg-foreground">
       {!edit ?
       <>
         <div className="w-full flex flex-col gap-2 items-center">

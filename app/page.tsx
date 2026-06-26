@@ -1,5 +1,4 @@
 import PrimaryButton from "@/components/PrimaryButton";
-import Image from "next/image";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faChevronDown, faClock, faLocationDot } from "@fortawesome/free-solid-svg-icons";
@@ -12,14 +11,14 @@ export default async function Home() {
   console.log(opStatus);
 
   return (
-    <main className="h-[calc(100vh-theme(spacing.12))] overflow-y-scroll snap-y snap-mandatory scroll-smooth custom-scrollbar">
+    <main className="h-[calc(100dvh-theme(spacing.12))] overflow-y-scroll snap-y snap-mandatory scroll-smooth custom-scrollbar">
 
       {/* HERO */}
-      <section className="snap-start h-[calc(100vh-theme(spacing.12))] flex flex-col items-center justify-end bg-background pb-4">
+      <section className="snap-start h-[calc(100dvh-theme(spacing.12))] flex flex-col items-center justify-end bg-background pb-4">
         
         <div className="flex items-center justify-center px-6 py-2 w-full">
           {/* LOGO */}
-          <Image
+          <img
             src="/power_main.svg"
             alt="Hero Image"
             width={180}
@@ -132,7 +131,7 @@ export default async function Home() {
               
 
       {/* FASILITAS */}
-      <section className="snap-start w-full h-[calc(100vh-theme(spacing.12))] flex flex-col gap-6 items-center justify-end bg-background pb-8">
+      <section className="snap-start w-full h-[calc(100dvh-theme(spacing.12))] flex flex-col gap-6 items-center justify-end bg-background pb-8">
         <div className="w-full flex flex-col gap-2 px-6">
           <h2 className="text-2xl font-black text-center">Fasilitas</h2>
           <p className="text-xs text-center">
@@ -156,7 +155,7 @@ export default async function Home() {
       
 
       {/* PRICING */}
-      <section className="snap-start w-full h-[calc(100vh-theme(spacing.12))] flex flex-col gap-6 items-center justify-end bg-background pb-8 px-6">
+      <section className="snap-start w-full h-[calc(100dvh-theme(spacing.12))] flex flex-col gap-6 items-center justify-end bg-background pb-8 px-6">
         <div className="w-full flex flex-col gap-2">
           <h2 className="text-2xl font-black text-center">Biaya</h2>
           <p className="text-xs text-center">
@@ -226,7 +225,7 @@ export default async function Home() {
       
 
       {/* LOCATION */}
-      <section className="snap-start h-[calc(100vh-theme(spacing.12))] flex flex-col items-center justify-end gap-6 bg-background pb-8 px-6">
+      <section className="snap-start h-[calc(100dvh-theme(spacing.12))] flex flex-col items-center justify-end gap-6 bg-background pb-8 px-6">
         <div className="w-full flex flex-col gap-2">
           <h2 className="text-2xl font-black text-center">Lokasi</h2>
           <p className="text-xs text-center">
@@ -266,18 +265,7 @@ export default async function Home() {
           </div>
           
         </div>
-
-        {/* <div className="mt-10 px-4 mb-10">
-          <div className="bg-gray-100 p-4 rounded-xl">
-            
-
-            <div className="h-40 bg-gray-300 rounded-lg mt-4" />
-
-            
-          </div>
-        </div> */}
       </section>
-      
     </main>
   );
 }

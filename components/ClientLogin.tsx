@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
 import { redirect, useRouter } from "next/navigation";
 import { loginAction } from "@/app/actions/auth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 
 const initialState = {
   error: "",
@@ -23,6 +25,8 @@ export default function LoginPage() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [errors, setErrors] = useState({
     username: false,
@@ -103,7 +107,7 @@ export default function LoginPage() {
   }, [username, password])
 
   return (
-    <main className="w-full h-[calc(100vh-theme(spacing.12))] px-6">
+    <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6">
       {pending?
         <div className="flex flex-col gap-2 h-full justify-center items-center">
           <img src="/power.png" className="w-54 animate-pulse" />
@@ -136,7 +140,7 @@ export default function LoginPage() {
                   placeholder="Username"
                   autoComplete="current-username"
                   className={`
-                    w-full rounded-sm px-4 py-2 text-sm
+                    w-full rounded-sm px-4 py-4 text-sm
                     border-1 border-stroke/40 focus:outline-2 outline-stroke
                     ${username ? "outline-2 bg-background" : "bg-paragraph/5"}
                     ${errors.username && "bg-prime/20"}
@@ -159,23 +163,23 @@ export default function LoginPage() {
                   Password
                   <span className={`text-prime ${!errors.password && "hidden"}`}>{" (Pasword harus diisi!)"}</span>
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Password"
-                  autoComplete="current-password"
-                  className={`
-                    w-full rounded-sm px-4 py-2 text-sm
-                    border-1 border-stroke/40 focus:outline-2 outline-stroke
-                    ${password ? "outline-2 bg-background" : "bg-paragraph/5"}
-                    ${errors.password && "bg-prime/20"}
-                  `}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setInteracted(true);
-                  }}
-                />
+                <div className={`flex items-center gap-2 w-full rounded-sm px-4 py-4 text-sm border-1 border-stroke/40 outline-stroke focus-within:outline-2 ${password ? "outline-2 bg-background" : "bg-paragraph/5"} ${errors.password && "bg-prime/20"}`}>
+
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Password"
+                    autoComplete="current-password"
+                    className="w-full outline-none focus:outline-none focus:ring-0"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setInteracted(true);
+                    }}
+                  />
+
+                  <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} onClick={() => setShowPassword(!showPassword)} size="lg" className="w-4 text-stroke hover:text-stroke/40 cursor-pointer" />
+                </div>
               </div>
 
             </div>
@@ -183,18 +187,10 @@ export default function LoginPage() {
             <div className="w-full">
               <PrimaryButton
                 type="submit"
-                // onSubmit={handleLogin}
                 disabled={pending || !username || !password}
               >
                 {pending? "Loading..." : "Log In"}
               </PrimaryButton>
-
-              <p className="text-center mt-6 text-sm">
-                Belum jadi member?{" "}
-                <Link href="/pendaftaran" className="text-prime font-bold underline hover:text-paragraph hover:no-underline">
-                  Daftar
-                </Link>
-              </p>
             </div>
           </form>
 

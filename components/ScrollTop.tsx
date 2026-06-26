@@ -29,7 +29,7 @@ export default function ScrollTop() {
   return (
     <button
       onClick={scrollToTop}
-      className={`absolute top-6 right-6 bg-prime rounded-full py-2 px-3 text-background shadow-md/40 cursor-pointer overflow-hidden transition-all duration-300 ${
+      className={`absolute top-6 right-4 bg-prime rounded-full py-2 px-4 text-background shadow-md/40 cursor-pointer overflow-hidden transition-all duration-300 ${
         visible
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-4 pointer-events-none"

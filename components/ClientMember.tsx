@@ -86,7 +86,7 @@ export default function MemberPage({ username }: { username: string }) {
   }, [member]);
 
   return (
-    <div className="h-[calc(100vh-theme(spacing.12))] flex flex-col gap-8 py-4 px-6 justify-end items-center">
+    <div className="h-[calc(100dvh-theme(spacing.12))] flex flex-col gap-8 py-4 px-6 justify-end items-center">
       {loading?
         <>
           <div className="w-full flex flex-col gap-4 items-center animate-pulse">

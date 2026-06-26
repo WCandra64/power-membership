@@ -58,7 +58,7 @@ export async function POST(req: Request) {
 
     // 3. CREATE MEMBERSHIP
     await db.query(
-      `INSERT INTO membership (id_member, tgl_mulai, tgl_kadaluarsa, created_at)
+      `INSERT INTO membership (id_member, tgl_mulai, tgl_kedaluwarsa, created_at)
        VALUES (?, ?, ?, ?)`,
       [memberId, startMembership, endMembership, now]
     );

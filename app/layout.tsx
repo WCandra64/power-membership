@@ -39,7 +39,7 @@ export default async function RootLayout({
     <html>
       <body className={`${mulish.variable} ${chivo.variable} bg-stone-700 flex justify-center`}>
         <Navbar />
-        <div className="w-full max-w-md bg-background min-[calc(100vh-theme(spacing.12))] mt-12">
+        <div className="w-full max-w-3xl bg-background min-h-[calc(100dvh-theme(spacing.12))] mt-12">
           {children}
         </div>
       </body>

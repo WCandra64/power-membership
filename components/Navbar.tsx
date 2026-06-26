@@ -31,7 +31,7 @@ export default function Navbar() {
   };
 
   return (
-    <div className="flex items-center justify-between px-6 border-b-2 bg-background w-full max-w-md h-12 fixed z-10">
+    <div className="flex items-center justify-between px-6 border-b-2 bg-background w-full max-w-3xl h-12 fixed z-10">
       <div className={`flex items-center h-full ${hideIcon && "mx-auto"}`}>
         <Link href="/" className="h-full flex items-center py-2">
           <img
