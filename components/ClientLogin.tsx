@@ -1,9 +1,7 @@
 "use client";
 
 import PrimaryButton from "@/components/PrimaryButton";
-import Link from "next/link";
 import { useActionState, useEffect, useState } from "react";
-import { redirect, useRouter } from "next/navigation";
 import { loginAction } from "@/app/actions/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";

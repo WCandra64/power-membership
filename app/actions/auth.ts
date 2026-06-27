@@ -31,9 +31,6 @@ export async function loginAction(prevState: any, formData: FormData) {
     sameSite: "lax",
   });
 
-  // if (user.role === "admin") {
-  //   redirect("/admin");
-  // }
-
-  // redirect("/member/"+username);
+  if (user.role === "admin") redirect("/admin");
+  else redirect("/member/"+username);
 }

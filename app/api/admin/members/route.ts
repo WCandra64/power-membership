@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { localTime } from "@/lib/time";
 // import { getMembers } from "@/lib/db/queries/adminMembers";
 
 export async function GET(req: Request) {
@@ -24,9 +25,13 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
 
     const page = Number(searchParams.get("page") || 1);
-    const limit = Number(searchParams.get("limit") || 30);
+    const limit = Number(searchParams.get("limit") || 20);
+    const search = searchParams.get("search") || "";
+    const filter = searchParams.get("filter") || "Member";
+    const sort = searchParams.get("sort") || "newest";
+    console.log(sort)
 
-    const result = await getMembers(page, limit);
+    const result = await getMembers(page, limit, search, filter, sort);
 
     return NextResponse.json({
       data: result.data,
@@ -50,31 +55,86 @@ export async function GET(req: Request) {
   }
 }
 
-export async function getMembers(page = 1, limit = 30) {
+export async function getMembers(page = 1, limit = 20, search = "", filter = "Member", sort = "newest") {
+  const now = localTime();
   const offset = (page - 1) * limit;
 
-  const [rows] = await db.query(
-    `
-    SELECT
-      m.id,
-      m.nama AS name,
-      m.no_telp AS phone,
-      m.foto_url AS photo,
-      u.username,
+  let where: string[] = [];
+  let params: any[] = [];
 
-      ms.tgl_mulai AS msStart,
-      ms.tgl_kedaluwarsa AS msEnd,
+  if (search.trim()) {
+    where.push(`
+      (
+        m.nama LIKE ?
+        OR u.username LIKE ?
+      )
+    `);
 
-      CASE
-        WHEN CURDATE() BETWEEN ms.tgl_mulai AND ms.tgl_kedaluwarsa
-        THEN 'ACTIVE'
-        ELSE 'EXPIRED'
-      END AS msStatus,
+    const keyword = `%${search}%`;
 
-      v.waktu_mulai AS lastCheckin,
-      v.waktu_akhir AS lastCheckout
+    params.push(
+      keyword,
+      keyword,
+    );
+  }
 
-    FROM members m
+  switch (filter) {
+    case "Aktif":
+      where.push(`
+        ? BETWEEN ms.tgl_mulai
+          AND ms.tgl_kedaluwarsa
+      `);
+
+      params.push(now);
+      break;
+
+    case "Latihan":
+      where.push(`
+        ? BETWEEN v.waktu_mulai
+          AND v.waktu_akhir
+      `);
+
+      params.push(now);
+      break;
+
+    case "Nonaktif":
+      where.push(`
+        ? NOT BETWEEN ms.tgl_mulai
+          AND ms.tgl_kedaluwarsa
+      `);
+
+      params.push(now);
+      break;
+  }
+
+  const whereClause =
+    where.length > 0
+      ? `WHERE ${where.join(" AND ")}`
+      : "";
+
+  let orderBy = "ms.tgl_mulai DESC";
+
+  switch (sort) {
+    case "oldest":
+      orderBy = "ms.tgl_mulai ASC";
+      console.log(orderBy);
+      break;
+
+    case "name_asc":
+      orderBy = "m.nama ASC";
+      console.log(orderBy);
+      break;
+
+    case "name_desc":
+      orderBy = "m.nama DESC";
+      console.log(orderBy);
+      break;
+  }
+
+  console.log(orderBy)
+  console.log(sort)
+
+  const join = `
     LEFT JOIN users u ON u.id_member = m.id
 
     LEFT JOIN (
@@ -98,15 +158,51 @@ export async function getMembers(page = 1, limit = 30) {
       )
     ) v
       ON v.id_member = m.id
+  `;
 
-    ORDER BY m.created_at DESC
+  const [rows] = await db.query(
+    `
+    SELECT
+      m.id,
+      m.nama AS name,
+      m.no_telp AS phone,
+      m.foto_url AS photo,
+      u.username,
+
+      ms.tgl_mulai AS msStart,
+      ms.tgl_kedaluwarsa AS msEnd,
+
+      CASE
+        WHEN ? BETWEEN ms.tgl_mulai AND ms.tgl_kedaluwarsa
+        THEN TRUE
+        ELSE FALSE
+      END AS msStatus,
+
+      v.waktu_mulai AS lastCheckin,
+      v.waktu_akhir AS lastCheckout
+
+    FROM members m
+    
+    ${join}
+
+    ${whereClause}
+
+    ORDER BY ${orderBy}
+
     LIMIT ? OFFSET ?;
     `,
-    [limit, offset]
+    [localTime(), ...params, limit, offset]
   );
 
   const [count] = await db.query(
-    `SELECT COUNT(*) as total FROM members`
+    `
+    SELECT COUNT(*) AS total
+    FROM members m
+    ${join}
+
+    ${whereClause}
+    `,
+    params
   );
 
   return {

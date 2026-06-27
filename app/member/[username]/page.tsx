@@ -1,7 +1,7 @@
 import MemberPage from "@/components/ClientMember";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { getOperationalStatus } from "@/lib/operationalStatus";
+import { getOperationalData } from "@/lib/operationalData";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -22,7 +22,7 @@ export default async function MemberServer({ params }: Props) {
 
   console.log("username: "+username);
 
-  const opStatus = await getOperationalStatus();
+  const opStatus = await getOperationalData();
 
   // if (session.username !== params) {
   //   redirect("/login");

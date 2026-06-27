@@ -3,11 +3,11 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt, faChevronDown, faClock, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
-import { getOperationalStatus } from "@/lib/operationalStatus";
+import { getOperationalData } from "@/lib/operationalData";
 
 export default async function Home() {
 
-  const opStatus = await getOperationalStatus();
+  const opStatus = await getOperationalData();
   console.log(opStatus);
 
   return (

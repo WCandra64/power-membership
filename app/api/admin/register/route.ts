@@ -2,14 +2,31 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { db } from "@/lib/db";
 import { localTime } from "@/lib/time";
+import { getSession } from "@/lib/session";
 
 export async function POST(req: Request) {
   let conn;
 
   try {
+    const session = await getSession();
+
+    if (!session) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    if (session.role !== "admin") {
+      return NextResponse.json(
+        { message: "Forbidden" },
+        { status: 403 }
+      );
+    }
+
     const {
       name,
-      noHp,
+      phone,
       photoUrl,
       photoId,
       startMembership,
@@ -26,11 +43,13 @@ export async function POST(req: Request) {
     // 1. CREATE MEMBER
     const [memberResult]: any = await db.query(
       `
-      INSERT INTO members (nama, no_telp, foto_url, foto_id, waktu_daftar, terdaftar, created_at)
-      VALUES (?, ?, ?, ?, ?, TRUE, ?)
+      INSERT INTO members (nama, no_telp, foto_url, foto_id, created_at)
+      VALUES (?, ?, ?, ?, ?)
       `,
-      [name, noHp, photoUrl, photoId, now, now]
+      [name, phone, photoUrl, photoId, now]
     );
+    console.log("phone", phone)
+    console.log(memberResult);
 
     const memberId = memberResult.insertId;
 

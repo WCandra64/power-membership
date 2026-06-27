@@ -9,16 +9,6 @@ import { useEffect, useState } from "react";
 
 export default function MemberPage({ username }: { username: string }) {
 
-  const memberDummy = {
-    username,
-    name: "John Doe",
-    img: "/user.png",
-    isActive: true,
-    activeDate: "07/06/2026",
-    expiredDate: "06/07/2026",
-    checkedIn: true,
-  }
-
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<any>({});
 

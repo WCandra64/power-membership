@@ -1,10 +1,10 @@
 // app/api/operational/route.ts
 
 import { NextResponse } from "next/server";
-import { getOperationalStatus } from "@/lib/operationalStatus";
+import { getOperationalData } from "@/lib/operationalData";
 
 export async function GET() {
-  const status = await getOperationalStatus();
+  const status = await getOperationalData();
 
   return NextResponse.json(status);
 }

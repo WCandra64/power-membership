@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { getOperationalStatus } from "@/lib/operationalStatus";
+import { getOperationalData } from "@/lib/operationalData";
 import { localTime } from "@/lib/time";
 
 export async function POST() {
@@ -15,7 +15,7 @@ export async function POST() {
       );
     }
 
-    const status = await getOperationalStatus();
+    const status = await getOperationalData();
 
     if (!status.operasional) {
       return NextResponse.json(

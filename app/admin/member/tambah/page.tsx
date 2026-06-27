@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { faRemove } from "@fortawesome/free-solid-svg-icons";
 import { localTime } from "@/lib/time";
+import { uploadImage } from "@/lib/imageOperations";
 
 export default function AddMemberPage() {
 
@@ -29,6 +30,7 @@ export default function AddMemberPage() {
   const [errors, setErrors] = useState({
     name: false,
     phoneType: false,
+    phoneLength: false,
     photo: false,
   });
   
@@ -44,6 +46,7 @@ export default function AddMemberPage() {
 
   function setMembership(date: Date) {
     const result = date;
+    console.log(result)
 
     setStartMembership(date.toISOString().split("T")[0]);
 
@@ -64,7 +67,7 @@ export default function AddMemberPage() {
   
   useEffect(() => {
     setMembership(now);
-  }, [])
+  }, []);
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   
@@ -95,11 +98,13 @@ export default function AddMemberPage() {
     const newErrors = {
       name: false,
       phoneType: false,
+      phoneLength: false,
       photo: false,
     };
 
     if (!name) newErrors.name = true;
     if (phone && !/^\d+$/.test(phone)) newErrors.phoneType = true;
+    if (phone.length > 15) newErrors.phoneLength = true;
     if (!photoFile) newErrors.photo = true;
 
     setErrors(newErrors);
@@ -107,6 +112,7 @@ export default function AddMemberPage() {
     if (
       newErrors.name ||
       newErrors.phoneType ||
+      newErrors.phoneLength ||
       newErrors.photo
     ) {
       console.log(newErrors);
@@ -123,27 +129,12 @@ export default function AddMemberPage() {
     });
   };
 
-  async function uploadImage() {
-    const publicId = `${name.toLowerCase().replace(/\s+/g, "")}-${Date.now()}`;
-
-    const formData = new FormData();
-    formData.append("file", photoFile!);
-    formData.append("publicId", publicId);
-
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    })
-
-    return await res.json();
-  }
-
-  async function registerMember() {
+async function registerMember() {
     try {
       setLoading(true);
 
       // UPLOAD IMAGE
-      const imageData = await uploadImage();
+      const imageData = await uploadImage(name, photoFile);
 
       console.log(imageData);
 
@@ -157,7 +148,7 @@ export default function AddMemberPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
+          name: name.trim(),
           phone,
           photoUrl,
           photoId,
@@ -246,7 +237,7 @@ export default function AddMemberPage() {
           <div>
             <label className="text-xs font-medium text-stroke">
               Nomor Handphone
-              <span className="text-prime">{errors.phoneType && " (No. HP harus berupa angka!)"}</span>
+              <span className="text-prime">{errors.phoneType ? " (No. HP harus berupa angka!)" : errors.phoneLength && " (No. HP tidak bisa melebihi 15 karakter)"}</span>
             </label>
             <input
               placeholder="Nomor Handphone (62812........)"
@@ -255,12 +246,12 @@ export default function AddMemberPage() {
                 w-full rounded-sm px-4 py-4 text-sm
                 border-1 border-stroke/40 focus:outline-2 outline-stroke
                 ${phone ? "outline-2 bg-background" : "bg-paragraph/5"}
-                ${errors.phoneType && "bg-prime/20"}
+                ${(errors.phoneType || errors.phoneLength) && "bg-prime/20"}
               `}
-              value={phone}
+              value={phone || ""}
               onChange={(e) => {
                 setPhone(e.target.value);
-                setErrors((prev) => ({ ...prev, phoneType: false }));
+                setErrors((prev) => ({ ...prev, phoneLength: false, phoneType: false }));
               }}
             />
           </div>

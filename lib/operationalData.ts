@@ -7,7 +7,7 @@ export type JadwalManual = {
   pengumuman: string;
 };
 
-export type OperationalStatus = {
+export type OperationalData = {
   operasional: boolean;
   sesi: 0 | 1 | 2;
   pengunjung: number;
@@ -15,7 +15,7 @@ export type OperationalStatus = {
   waktuAkhir: Date | null;
 };
 
-export async function getOperationalStatus(): Promise<OperationalStatus> {
+export async function getOperationalData(): Promise<OperationalData> {
   const now = localTime();
 
   const hour = now.getHours();

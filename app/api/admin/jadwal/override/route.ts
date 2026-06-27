@@ -1,12 +1,12 @@
 import { db } from "@/lib/db";
-import { getOperationalStatus } from "@/lib/operationalStatus";
+import { getOperationalData } from "@/lib/operationalData";
 import { localTime } from "@/lib/time";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const status = await getOperationalStatus();
+    const status = await getOperationalData();
     const now = localTime();
 
     await db.execute(
