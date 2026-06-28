@@ -8,9 +8,42 @@ export async function POST(req: Request) {
 
     const status = await getOperationalData();
     const now = localTime();
+    const jadwal = status.jadwal;
+    let insert = true;
 
-    await db.execute(
+    if (jadwal && status.sesi !== 0) {
+      insert = false;
+    }
+
+    const temporaryOverride = jadwal && status.sesi === 0 && new Date(jadwal.waktu_akhir).getTime() === new Date(status.waktuAkhir).getTime();
+
+    if (temporaryOverride) {
+      insert = false;
+    }
+
+    const operational = body.status ?? jadwal?.status_operasional ?? status.operasional;
+
+    if (body.pengumuman !== undefined && body.pengumuman !== status.pengumuman)
+      await db.execute(`
+        UPDATE jadwal_manual
+        SET pengumuman = ?, updated_at = ?
+        WHERE DATE(waktu_mulai) = ?
+      `, [body.pengumuman, now, now.toISOString().split("T")[0]]
+      );
+
+    const announcement = body.pengumuman ?? status.pengumuman ?? "";
+      
+    await db.execute(jadwal && !insert ?
       `
+      UPDATE jadwal_manual 
+      SET
+        waktu_mulai = ?,
+        waktu_akhir = ?,
+        status_operasional = ?,
+        pengumuman = ?,
+        updated_at = ?
+      WHERE id = ${jadwal.id}
+      ` : `
       INSERT INTO jadwal_manual (
         waktu_mulai,
         waktu_akhir,
@@ -29,14 +62,15 @@ export async function POST(req: Request) {
       [
         now,
         status.waktuAkhir,
-        body.status,
-        body.pengumuman,
-        now
+        operational,
+        announcement,
+        now,
       ]
     );
 
     return Response.json({
-      message: "Success",
+      success: true,
+      message: "Operational data updated",
     });
   } catch (err) {
     console.error(err);

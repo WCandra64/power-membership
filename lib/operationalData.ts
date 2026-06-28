@@ -1,21 +1,22 @@
 import { db } from "@/lib/db";
 import { localTime } from "./time";
 
-export type JadwalManual = {
-  id: number;
-  status_operasional: boolean;
-  pengumuman: string;
-};
+// export type JadwalManual = {
+//   id: number;
+//   status_operasional: boolean;
+//   pengumuman: string;
+//   waktu_akhir: 
+// };
 
-export type OperationalData = {
-  operasional: boolean;
-  sesi: 0 | 1 | 2;
-  pengunjung: number;
-  pengumuman: string;
-  waktuAkhir: Date | null;
-};
+// export type OperationalData = {
+//   operasional: boolean;
+//   sesi: 0 | 1 | 2;
+//   pengunjung: number;
+//   pengumuman: string;
+//   waktuAkhir: Date | null;
+// };
 
-export async function getOperationalData(): Promise<OperationalData> {
+export async function getOperationalData(): Promise<any> {
   const now = localTime();
 
   const hour = now.getHours();
@@ -24,37 +25,44 @@ export async function getOperationalData(): Promise<OperationalData> {
   let waktuAkhir = new Date(now);
 
   if (hour < 11) {
-    if (hour >= 7) sesi = 1;
-
-    waktuAkhir.setHours(11, 0, 0, 0);
+    if (hour >= 7) {
+      sesi = 1;
+      waktuAkhir.setHours(11, 0, 0, 0);
+    } else
+      waktuAkhir.setHours(7, 0, 0, 0);
   } else if (hour < 21) {
-    if (hour >= 15) sesi = 2;
-
-    waktuAkhir.setHours(21, 0, 0, 0);
+    if (hour >= 15) {
+      sesi = 2;
+      waktuAkhir.setHours(21, 0, 0, 0);
+    } else
+      waktuAkhir.setHours(15, 0, 0, 0);
   } else {
     waktuAkhir.setDate(waktuAkhir.getDate() + 1);
-    waktuAkhir.setHours(11, 0, 0, 0);
+    waktuAkhir.setHours(7, 0, 0, 0);
   }
 
   // Default operation
   let operasional = sesi !== 0;
   let pengumuman = "";
 
-  const jadwalRows = await getActiveJadwal();
-  const jadwal = jadwalRows[0];
+  const jadwal = await getActiveJadwal();
 
+  pengumuman = await getActiveAnnouncement();
+  
   const pengunjung = await getCurrentVisitors();
 
   if (jadwal) {
     operasional = jadwal.status_operasional;
-    pengumuman = jadwal.pengumuman;
+    // pengumuman = jadwal.pengumuman;
+    // waktuAkhir = jadwal.waktu_akhir;
   }
 
   return {
     operasional,
     sesi,
-    pengunjung,
     pengumuman,
+    jadwal,
+    pengunjung,
     waktuAkhir,
   };
 }
@@ -71,7 +79,24 @@ async function getActiveJadwal() {
     [localTime()]
   );
 
-  return rows as JadwalManual[];
+  return (rows as any[])[0];
+}
+
+async function getActiveAnnouncement() {
+  const tomorrow = localTime();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const [rows] = await db.execute(
+    `
+    SELECT pengumuman
+    FROM jadwal_manual
+    WHERE DATE(waktu_mulai) IN (?, ?)
+    ORDER BY DATE(waktu_mulai) ASC
+    LIMIT 1
+    `,
+    [localTime().toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]]
+  );
+
+  return (rows as any[])[0].pengumuman;
 }
 
 async function getCurrentVisitors() {

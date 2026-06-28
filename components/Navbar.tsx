@@ -14,7 +14,7 @@ export default function Navbar() {
 
   const isAdmin = pathname.startsWith("/admin");
 
-  const hiddenNavbarPaths = ["/login", "/pendaftaran", "/member"];
+  const hiddenNavbarPaths = ["/login", "/member"];
 
   const hideIcon = hiddenNavbarPaths.some((path) =>
     pathname.startsWith(path)

@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import { localTime } from "@/lib/time";
 import timePassed from "@/lib/timePassed";
 import { destroyImage, uploadImage } from "@/lib/imageOperations";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 
 export default function AdminMemberPage({ username }: { username: string }) {
 
@@ -16,6 +16,7 @@ export default function AdminMemberPage({ username }: { username: string }) {
   const [member, setMember] = useState<any>({});
 
   const now = localTime();
+  const router = useRouter();
 
   // DETERMINE MEMBERSHIP
   // const today = now.setHours(0,0,0,0)
@@ -38,7 +39,7 @@ export default function AdminMemberPage({ username }: { username: string }) {
   });
 
   function initMembership(date: Date) {
-    const result = date;
+    const result = new Date(date);
 
     setStartMembership(date.toISOString().split("T")[0]);
 
@@ -66,7 +67,7 @@ export default function AdminMemberPage({ username }: { username: string }) {
       }),
     });
 
-    if (res.ok) window.location.reload();
+    if (res.ok) fetchData();
     else setLoading(false);
   }
     
@@ -125,7 +126,7 @@ export default function AdminMemberPage({ username }: { username: string }) {
       console.log(res.status);
       console.log(data);
 
-      if (res.ok) window.location.reload();
+      if (res.ok) fetchData();
       else setLoading(false);
 
       setEdit(false);
@@ -157,16 +158,29 @@ export default function AdminMemberPage({ username }: { username: string }) {
 
       if (data.photoId) {
         try {
-          const res = await destroyImage(data.photoId);
-          console.log(res);
+          await destroyImage(data.photoId);
         } catch (err) {
           console.error("Photo deletion failed:", err);
         }
       }
+      
+      router.push("/admin");
     } catch (err) {
       console.error(err);
       setLoading(false);
     }
+  }
+
+  async function fetchData() {
+    const res = await fetch(`/api/admin/member/${username}`, {
+      credentials: "include",
+    });
+
+    const memberJson = await res.json();
+
+    setMember(memberJson.data[0]);
+
+    setLoading(false);
   }
 
   function formatDate(dateInput: Date | string, type?: "full" | "medium") {
@@ -183,18 +197,6 @@ export default function AdminMemberPage({ username }: { username: string }) {
 
   // LOAD MEMBERS
   useEffect(() => {
-    async function fetchData() {
-      const res = await fetch(`/api/admin/member/${username}`, {
-        credentials: "include",
-      });
-
-      const memberJson = await res.json();
-
-      setMember(memberJson.data[0]);
-
-      setLoading(false);
-    }
-
     fetchData();
     initMembership(now);
   }, []);
@@ -414,13 +416,24 @@ export default function AdminMemberPage({ username }: { username: string }) {
               `}
             />
 
-            <input type="tel" name="phone" placeholder="628......." value={formEdit.phone || ""} onChange={(e) => setFormEdit({...formEdit, phone: e.target.value})} className={`
-              w-full px-4 py-2
-              border-1 border-stroke/40 outline-stroke rounded-sm
-              text-center text-md font-chivo bg-background
-              ${formEdit.phone? "bg-background outline-2" : "bg-paragraph/10"}
-              focus:outline-2
-            `} />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="628......."
+              value={formEdit.phone || ""}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (!isNaN(Number(val)) && val.length <= 15)
+                  setFormEdit({...formEdit, phone: val})
+              }}
+              className={`
+                w-full px-4 py-2
+                border-1 border-stroke/40 outline-stroke rounded-sm
+                text-center text-md font-chivo bg-background
+                ${formEdit.phone? "bg-background outline-2" : "bg-paragraph/10"}
+                focus:outline-2
+              `}
+            />
           </div>
 
         </div>

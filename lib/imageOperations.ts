@@ -32,5 +32,5 @@ export async function destroyImage(publicId: string) {
 
   if (!res.ok) {
     throw new Error(JSON.stringify(res.json));
-  } else return res.json;
+  } else return {success: true};
 }

@@ -43,7 +43,7 @@ export default function AdminPage() {
     checkedIn: true,
   }
 
-  const [opStatus, setOpStatus] = useState<any>({}); 
+  const [opData, setOpData] = useState<any>({}); 
 
   const [pengumuman, setPengumuman] = useState("");
 
@@ -105,16 +105,16 @@ export default function AdminPage() {
 
   const [activeCategory, setActiveCategory] = useState("");
 
-  async function fetchOpStatus() {
+  async function fetchOpData() {
     const res = await fetch("/api/operational");
 
     const json = await res.json();
     console.log(json);
 
-    setOpStatus(json);
+    setOpData(json);
   }
 
-  async function changeOpStatus() {
+  async function changeOpData(type: 1 | 2) {
     try {
       setLoading(true);
 
@@ -125,15 +125,16 @@ export default function AdminPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          status: !opStatus.operasional,
-          pengumuman,
+          status: type === 1 ? !opData.operasional : opData.operasional,
+          pengumuman: type === 2 ? pengumuman : opData.pengumuman,
         }),
       });
 
       const json = await res.json();
 
       if (res.ok) {
-        await fetchOpStatus();
+        console.log(json)
+        await fetchOpData();
       } 
     } finally {
       setLoading(false);
@@ -193,7 +194,7 @@ export default function AdminPage() {
   // LOAD MEMBERS
   useEffect(() => {
     setLoading(true);
-    fetchOpStatus();
+    fetchOpData();
     fetchStats();
   }, []);
   
@@ -215,6 +216,11 @@ export default function AdminPage() {
     setActiveCategory(categories.find(c => c.isActive)?.name ?? "Member");
   }, [categories]);
 
+  useEffect(() => {
+    console.log("data op:",opData);
+    setPengumuman(opData.pengumuman);
+  }, [opData]);
+
   return (
     <main className="relative flex flex-col gap-6 w-full min-h-[calc(100dvh-theme(spacing.12))] bg-foreground py-6">
 
@@ -222,17 +228,17 @@ export default function AdminPage() {
         <div className="flex justify-between">
           {/* OPEN BUTTON */}
           <button
-            onClick={changeOpStatus}
+            onClick={() => changeOpData(1)}
             disabled={loading}
             className={`relative w-36 h-10 rounded-full inset-shadow-sm/20 cursor-pointer transition ${
-              opStatus.operasional ? "bg-green-500" : "bg-paragraph/10"
+              opData.operasional ? "bg-green-500" : "bg-paragraph/10"
             }`}
           >
-            <span className="font-mulish font-black text-background">{opStatus.operasional ? "BUKA" : "TUTUP"}</span>
+            <span className="font-mulish font-black text-background">{loading? "" :opData.operasional ? "BUKA" : "TUTUP"}</span>
             <div
               className={`absolute top-0.5 h-9 w-9 rounded-full bg-background shadow-sm/20 transition-transform duration-200 ${
-                // loading ? "hidden" :
-                opStatus.operasional ? "translate-x-26.5" : "translate-x-0.5"
+                loading ? "hidden" :
+                opData.operasional ? "translate-x-26.5" : "translate-x-0.5"
               }`}
             />
           </button>
@@ -250,7 +256,7 @@ export default function AdminPage() {
             type="text"
             name="pengumuman"
             placeholder="Pengumuman..."
-            value={pengumuman}
+            value={pengumuman || ""}
             onChange={(e) => setPengumuman(e.target.value)}
             className={`
               w-full rounded-sm px-4 py-2 text-sm
@@ -259,7 +265,14 @@ export default function AdminPage() {
             `}
           />
 
-          <button disabled={pengumuman === ""} type="button" className="bg-green-500 px-2 text-background shadow-sm/40 rounded-sm cursor-pointer hover:bg-stroke disabled:bg-paragraph/10 disabled:text-paragraph/20 disabled:shadow-none"><FontAwesomeIcon icon={faCheck} /></button>
+          <button
+            type="button"
+            disabled={pengumuman === "" || loading || pengumuman === opData.pengumuman}
+            onClick={() => changeOpData(2)}
+            className="bg-green-500 px-2 text-background shadow-sm/40 rounded-sm cursor-pointer hover:bg-stroke disabled:bg-paragraph/10 disabled:text-paragraph/20 disabled:shadow-none"
+          >
+            <FontAwesomeIcon icon={faCheck} />
+          </button>
         </div>
       </div>
 

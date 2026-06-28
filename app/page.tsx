@@ -7,8 +7,7 @@ import { getOperationalData } from "@/lib/operationalData";
 
 export default async function Home() {
 
-  const opStatus = await getOperationalData();
-  console.log(opStatus);
+  const opData = await getOperationalData();
 
   return (
     <main className="h-[calc(100dvh-theme(spacing.12))] overflow-y-scroll snap-y snap-mandatory scroll-smooth custom-scrollbar">
@@ -53,7 +52,7 @@ export default async function Home() {
             {/* <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white via-transparent to-white" /> */}
 
             {/* PRICE */}
-            <Link href="/pendaftaran" className="absolute right-2 bottom-2 flex h-fit items-end gap-1 px-4 py-2 -mt-20 bg-prime text-background rounded-sm border-2 border-stroke shadow-sm/40 font-chivo italic hover:bg-stroke">
+            <Link href="https://wa.me/6282220348804" className="absolute right-2 bottom-2 flex h-fit items-end gap-1 px-4 py-2 -mt-20 bg-prime text-background rounded-sm border-2 border-stroke shadow-sm/40 font-chivo italic hover:bg-stroke">
               <div className="font-bold text-xs">
                 {`Rp `}
               </div>
@@ -94,7 +93,7 @@ export default async function Home() {
             // loading? (
             //   <div className="w-fit flex items-center gap-4 bg-paragraph/10 text-paragraph/40 border border-paragraph/40 px-6 py-1 rounded-full text-md font-bold tracking-wider" />
             // ) :
-            opStatus.operasional ? (
+            opData.operasional ? (
               <div className="w-full flex justify-center items-center gap-6 ">
                 <div className="flex items-center gap-4 bg-green-100 text-green-500 border border-green-500 px-6 py-1 rounded-full text-md font-bold tracking-wider">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -102,7 +101,7 @@ export default async function Home() {
                 </div>
 
                 <p className="text-xs mt-2 italic">
-                  <span className="font-bold">{opStatus.pengunjung}</span> orang sedang latihan
+                  <span className="font-bold">{opData.pengunjung}</span> orang sedang latihan
                 </p>
               </div>
             ) : (
@@ -122,7 +121,7 @@ export default async function Home() {
           </div>
 
           <p className="text-xs tracking-wide text-prime">
-            {opStatus.pengumuman || ""}
+            {opData.pengumuman || ""}
           </p>
         </div>
 
@@ -184,7 +183,7 @@ export default async function Home() {
               </div>
             </div>
 
-            <Link href="/pendaftaran"><PrimaryButton>Daftar Sekarang</PrimaryButton></Link>
+            <Link href="https://wa.me/6282220348804"><PrimaryButton>Daftar Sekarang</PrimaryButton></Link>
           </div>
 
           <div className="w-full flex gap-2">

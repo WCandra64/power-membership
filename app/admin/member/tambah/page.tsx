@@ -251,8 +251,11 @@ export default function AddMemberPage() {
               `}
               value={phone || ""}
               onChange={(e) => {
-                setPhone(e.target.value);
-                setErrors((prev) => ({ ...prev, phoneLength: false, phoneType: false }));
+                const val = e.target.value;
+                if (!isNaN(Number(val)) && val.length <= 15) {
+                  setPhone(e.target.value);
+                  setErrors((prev) => ({ ...prev, phoneLength: false, phoneType: false }));
+                }
               }}
             />
           </div>

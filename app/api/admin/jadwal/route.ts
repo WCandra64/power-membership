@@ -118,7 +118,24 @@ export async function GET(req: Request) {
     const [rows] = await db.query(
       `
       SELECT * FROM jadwal_manual 
-      WHERE waktu_akhir >= ? AND status_operasional = FALSE
+      WHERE waktu_akhir >= ?
+      AND status_operasional = FALSE
+      AND (
+        (
+          TIME(waktu_mulai) = '07:00:00'
+          AND TIME(waktu_akhir) = '11:00:00'
+        )
+        OR
+        (
+          TIME(waktu_mulai) = '15:00:00'
+          AND TIME(waktu_akhir) = '21:00:00'
+        )
+        OR
+        (
+          TIME(waktu_mulai) = '07:00:00'
+          AND TIME(waktu_akhir) = '21:00:00'
+        )
+      )
       ORDER BY waktu_mulai ASC;
       `,
       [localTime()]
@@ -130,7 +147,7 @@ export async function GET(req: Request) {
       rows
     });
   } catch (err: any) {
-    console.error("CREATE JADWAL ERROR:", err);
+    console.error("FETCH JADWAL ERROR:", err);
 
     return NextResponse.json(
       {
