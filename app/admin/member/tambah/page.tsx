@@ -13,6 +13,7 @@ import { uploadImage } from "@/lib/imageOperations";
 export default function AddMemberPage() {
 
   const now = localTime();
+  const toDate = localTime().toISOString().split("T")[0];
   
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +26,6 @@ export default function AddMemberPage() {
   const [phone, setPhone] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [openSuccess, setOpenSuccess] = useState(false);
-  const router = useRouter();
 
   const [errors, setErrors] = useState({
     name: false,
@@ -44,11 +44,14 @@ export default function AddMemberPage() {
     }, 3000);
   };
 
-  function setMembership(date: Date) {
-    const result = date;
-    console.log(result)
+  const [membershipDate, setMembershipDate] = useState(false);
+  const [startMembership, setStartMembership] = useState("");
+  const [endMembership, setEndMembership] = useState("");
 
-    setStartMembership(date.toISOString().split("T")[0]);
+  function setMembership(date: Date = now) {
+    const result = new Date(date);
+
+    setStartMembership(result.toISOString().split("T")[0]);
 
     const daysOfMonth = new Date(
       result.getFullYear(),
@@ -60,14 +63,6 @@ export default function AddMemberPage() {
 
     setEndMembership(result.toISOString().split("T")[0]);
   }
-
-  const [membershipDate, setMembershipDate] = useState(false);
-  const [startMembership, setStartMembership] = useState("");
-  const [endMembership, setEndMembership] = useState("");
-  
-  useEffect(() => {
-    setMembership(now);
-  }, []);
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   
@@ -126,10 +121,12 @@ export default function AddMemberPage() {
       name,
       phone,
       photoFile,
+      startMembership,
+      endMembership
     });
   };
 
-async function registerMember() {
+  async function registerMember() {
     try {
       setLoading(true);
 
@@ -190,6 +187,10 @@ async function registerMember() {
 
     setOpenSuccess(false);
   }
+  
+  useEffect(() => {
+    setMembership();
+  }, []);
 
   return (
     <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6 bg-foreground">
@@ -333,7 +334,7 @@ async function registerMember() {
               <input
                 type="date"
                 name="startMembershipship"
-                value={startMembership}
+                value={startMembership || ""}
                 onChange={(e) => setMembership(!isNaN(new Date(e.target.value).getTime()) ? new Date(e.target.value) : now)}
                 className="rounded-lg border px-3 py-4"
               />
@@ -344,7 +345,7 @@ async function registerMember() {
               <input
                 type="date"
                 name="endMembership"
-                value={endMembership}
+                value={endMembership || ""}
                 onChange={(e) => {
                   setEndMembership(e.target.value);
                 }}
@@ -356,7 +357,7 @@ async function registerMember() {
               <BareButton
                 onClick={() => {
                   setMembershipDate(false);
-                  setMembership(now);
+                  setMembership();
                 }}
               >
                 Batal

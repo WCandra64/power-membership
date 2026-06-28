@@ -157,15 +157,15 @@ export default function AdminMemberPage({ username }: { username: string }) {
 
       if (data.photoId) {
         try {
-          await destroyImage(data.photoId);
+          const res = await destroyImage(data.photoId);
+          console.log(res);
         } catch (err) {
           console.error("Photo deletion failed:", err);
         }
       }
     } catch (err) {
       console.error(err);
-    } finally {
-      redirect("/admin");
+      setLoading(false);
     }
   }
 
@@ -362,7 +362,7 @@ export default function AdminMemberPage({ username }: { username: string }) {
 
               <hr className="border-stroke" />
 
-              <span className="text-sm">Hapus secara permanen member <span className="font-extrabold font-mulish">{member.name}</span>? <span className="text-prime">{member.isActive && "Member masih berstatus aktif."}</span> <br /> <br /> * Data member terhapus tidak dapat dipulihkan kembali.</span>
+              <span className="text-sm">Hapus secara permanen member <span className="font-extrabold font-mulish">{member.nama}</span>? <span className="text-prime">{member.isActive && "Member masih berstatus aktif."}</span> <br /> <br /> * Data member terhapus tidak dapat dipulihkan kembali.</span>
 
               <div className="flex gap-2 pt-6">
                 <BareButton onClick={() => setRemove(false)}>Batal</BareButton>

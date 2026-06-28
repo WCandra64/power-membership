@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 export async function uploadImage(name: string, file: File | null) {
   const publicId = `${name.toLowerCase().replace(/\s+/g, "")}-${Date.now()}`;
 
@@ -30,5 +32,5 @@ export async function destroyImage(publicId: string) {
 
   if (!res.ok) {
     throw new Error(JSON.stringify(res.json));
-  }
+  } else return res.json;
 }
