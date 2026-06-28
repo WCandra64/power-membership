@@ -47,7 +47,8 @@ export async function getOperationalData(): Promise<any> {
 
   const jadwal = await getActiveJadwal();
 
-  pengumuman = await getActiveAnnouncement();
+  const pengumumanRow = await getActiveAnnouncement();
+  pengumuman = pengumumanRow?.pengumuman ?? "";
   
   const pengunjung = await getCurrentVisitors();
 
@@ -96,7 +97,7 @@ async function getActiveAnnouncement() {
     [localTime().toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]]
   );
 
-  return (rows as any[])[0].pengumuman;
+  return (rows as any[])[0];
 }
 
 async function getCurrentVisitors() {
