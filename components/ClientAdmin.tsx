@@ -1,12 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { act, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAngleDown, faCalendarAlt, faCaretDown, faCaretUp, faCertificate, faCheck, faCheckCircle, faPlus, faPlusCircle, faSearch, faSort, faStreetView, faUserAltSlash, faUsers } from "@fortawesome/free-solid-svg-icons";
-import PrimaryButton from '@/components/PrimaryButton'
+import { faCalendarAlt, faCheck, faCheckCircle, faPlus, faSearch, faStreetView, faUserAltSlash, faUsers } from "@fortawesome/free-solid-svg-icons";
 import ScrollTop from "@/components/ScrollTop";
-import { localTime } from "@/lib/time";
 import timePassed from "@/lib/timePassed";
 
 type Member = {
@@ -30,7 +28,11 @@ type Member = {
 export default function AdminPage() {
 
   const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
+  const [opLoading, setOpLoading] = useState(true);
+  const [memberLoading, setMemberLoading] = useState(true);
+  const loading = opLoading || memberLoading;
+
   const [page, setPage] = useState(1);
 
   const [opData, setOpData] = useState<any>({}); 
@@ -41,7 +43,6 @@ export default function AdminPage() {
 
   // const sort = ["Nama", "Tgl Mulai", "Tgl Expired"]
   const [sort, setSort] = useState("newest");
-  const [sortOrder, setSortOrder] = useState<"def" | "asc" | "dsc">("def");
 
   const [categories, setCategories] = useState([
     {
@@ -96,42 +97,43 @@ export default function AdminPage() {
   const [activeCategory, setActiveCategory] = useState("");
 
   async function fetchOpData() {
-    const res = await fetch("/api/operational");
+    setOpLoading(true);
+    try {
+      const res = await fetch("/api/operational");
 
-    const json = await res.json();
-    console.log(json);
+      const json = await res.json();
+      console.log(json);
 
-    setOpData(json);
+      setOpData(json);
+    } finally {
+      setOpLoading(false);
+    }
   }
 
   async function changeOpData(type: 1 | 2) {
-    try {
-      setLoading(true);
+    setOpLoading(true);
 
-      const res = await fetch("/api/admin/jadwal/override", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: type === 1 ? !opData.operasional : opData.operasional,
-          pengumuman: type === 2 ? pengumuman : opData.pengumuman,
-        }),
-      });
+    const res = await fetch("/api/admin/jadwal/override", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: type === 1 ? !opData.operasional : opData.operasional,
+        pengumuman: type === 2 ? pengumuman : opData.pengumuman,
+      }),
+    });
 
-      const json = await res.json();
+    const json = await res.json();
 
-      if (res.ok) {
-        console.log(json)
-        if (type === 2)
-          await fetchOpData();
-        if (type === 1)
-          window.location.reload();
-      } 
-    } finally {
-      setLoading(false);
-    }
+    if (res.ok) {
+      console.log(json)
+      if (type === 2)
+        await fetchOpData();
+      if (type === 1)
+        window.location.reload();
+    } 
   }
 
   // TRAINING SESSION
@@ -156,21 +158,24 @@ export default function AdminPage() {
   }
 
   async function fetchMembers() {
-    setLoading(true);
-    const res = await fetch(`/api/admin/members?page=${page}&limit=30&search=${search}&filter=${activeCategory}&sort=${sort}`, {
-      credentials: "include",
-    });
+    setMemberLoading(true);
+    try {
+      const res = await fetch(`/api/admin/members?page=${page}&limit=30&search=${search}&filter=${activeCategory}&sort=${sort}`, {
+        credentials: "include",
+      });
 
-    const json = await res.json();
-    console.log(json);
+      const json = await res.json();
+      console.log(json);
 
-    setMembers(
-      json.data.map((m: Member) => ({
-        ...m,
-        showImage: false,
-      }))
-    );
-    setLoading(false);
+      setMembers(
+        json.data.map((m: Member) => ({
+          ...m,
+          showImage: false,
+        }))
+      );
+    } finally {
+      setMemberLoading(false);
+    }
   }
 
   async function fetchStats() {
@@ -186,7 +191,6 @@ export default function AdminPage() {
 
   // LOAD MEMBERS
   useEffect(() => {
-    setLoading(true);
     fetchOpData();
     fetchStats();
   }, []);
@@ -210,9 +214,14 @@ export default function AdminPage() {
   }, [categories]);
 
   useEffect(() => {
-    console.log("data op:",opData);
     setPengumuman(opData.pengumuman);
   }, [opData]);
+
+  // useEffect(() => {
+  //   if (!opLoading && !memberLoading)
+  //     setLoading(false);
+  //   else setLoading(true);
+  // }, [opLoading, memberLoading])
 
   return (
     <main className="relative flex flex-col gap-6 w-full min-h-[calc(100dvh-theme(spacing.12))] bg-foreground py-6">
