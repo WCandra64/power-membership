@@ -56,7 +56,7 @@ export async function POST() {
       )
       VALUES (?, ?, ?, ?)
       `,
-      [session.memberId as number, now, status.waktuAkhir, now]
+      [session.memberId as number, now, storeTime(status.waktuAkhir), now]
     );
 
     return NextResponse.json({
