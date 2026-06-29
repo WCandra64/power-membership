@@ -66,7 +66,7 @@ export async function getOperationalData(): Promise<any> {
   return {
     wa1,
     wa2,
-    now,
+    now: localTime(),
     operasional,
     sesi,
     pengumuman,
