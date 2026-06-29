@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       ]
     );
 
-    if(body.status)
+    if(body.status === false)
       await db.execute(
         `
         UPDATE visits
