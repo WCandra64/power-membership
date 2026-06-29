@@ -75,6 +75,7 @@ export default function MemberPage({ username }: { username: string }) {
         now <= new Date(member.lastCheckout).getTime()
       );
       console.log("now ", now, "checkin", new Date(member.lastCheckin).getTime(), "checkout", new Date(member.lastCheckout).getTime())
+      console.log("checkin", member.lastCheckin, "checkout", member.lastCheckout)
     }
   }, [member]);
 
