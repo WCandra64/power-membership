@@ -71,6 +71,16 @@ export async function POST(req: Request) {
       ]
     );
 
+    if(body.status)
+      await db.execute(
+        `
+        UPDATE visits
+        SET waktu_akhir = ?, updated_at = ?
+        WHERE ? BETWEEN waktu_mulai AND waktu_akhir
+        `,
+        [now, now, now]
+      );
+
     return Response.json({
       success: true,
       message: "Operational data updated",
