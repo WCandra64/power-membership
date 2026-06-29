@@ -24,6 +24,7 @@ export async function getOperationalData(): Promise<any> {
 
   let sesi: 0 | 1 | 2 = 0;
   let waktuAkhir = now;
+  const wa1 = waktuAkhir;
   console.log("wa:", waktuAkhir)
 
   if (hour < 11) {
@@ -43,6 +44,7 @@ export async function getOperationalData(): Promise<any> {
     waktuAkhir.setHours(7, 0, 0, 0);
   }
   console.log("wa2:", waktuAkhir)
+  const wa2 = waktuAkhir;
 
   // Default operation
   let operasional = sesi !== 0;
@@ -62,6 +64,9 @@ export async function getOperationalData(): Promise<any> {
   }
 
   return {
+    wa1,
+    wa2,
+    now,
     operasional,
     sesi,
     pengumuman,
