@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       insert = false;
     }
 
-    const temporaryOverride = jadwal && status.sesi === 0 && jadwal.waktu_akhir === status.waktuAkhir;
+    const temporaryOverride = jadwal && status.sesi === 0 && jadwal.waktu_akhir === storeTime(status.waktuAkhir);
 
     if (temporaryOverride) {
       insert = false;
