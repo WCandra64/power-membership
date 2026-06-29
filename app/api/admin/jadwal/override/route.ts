@@ -10,12 +10,15 @@ export async function POST(req: Request) {
     const now = storeTime();
     const jadwal = status.jadwal;
     let insert = true;
+    const adjustedEndTime = new Date(
+      status.waktuAkhir.getTime() - 7 * 60 * 60 * 1000
+    );
 
     if (jadwal && status.sesi !== 0) {
       insert = false;
     }
 
-    const temporaryOverride = jadwal && status.sesi === 0 && new Date(jadwal.waktu_akhir).getTime() === new Date(status.waktuAkhir).getTime();
+    const temporaryOverride = jadwal && status.sesi === 0 && new Date(jadwal.waktu_akhir).getTime() === adjustedEndTime.getTime();
 
     if (temporaryOverride) {
       insert = false;
@@ -72,7 +75,7 @@ export async function POST(req: Request) {
       success: true,
       message: "Operational data updated",
       schedtime: new Date(jadwal.waktu_akhir).getTime(),
-      endtime: new Date(status.waktuAkhir).getTime()
+      endtime: adjustedEndTime.getTime()
     });
   } catch (err) {
     console.error(err);
