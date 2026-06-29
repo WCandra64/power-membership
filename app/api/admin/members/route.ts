@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { storeDate, storeTime } from "@/lib/time";
@@ -9,14 +8,14 @@ export async function GET(req: Request) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -33,7 +32,7 @@ export async function GET(req: Request) {
 
     const result = await getMembers(page, limit, search, filter, sort);
 
-    return NextResponse.json({
+    return Response.json({
       data: result.data,
       pagination: {
         page,
@@ -45,7 +44,7 @@ export async function GET(req: Request) {
   } catch (err: any) {
     console.error("ADMIN MEMBERS ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,

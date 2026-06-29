@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 
@@ -13,14 +12,14 @@ export async function GET(req: Request, { params }: Props) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.username !== username) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -28,13 +27,13 @@ export async function GET(req: Request, { params }: Props) {
 
     const result = await getMember(username);
 
-    return NextResponse.json({
+    return Response.json({
       data: result.data,
     });
   } catch (err: any) {
     console.error("GET MEMBER ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,

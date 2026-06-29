@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import cloudinary from "@/lib/cloudinary";
 import { getSession } from "@/lib/session";
 
@@ -7,14 +6,14 @@ export async function POST(req: Request) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -26,7 +25,7 @@ export async function POST(req: Request) {
     const publicId = formData.get("publicId") as string;
 
     if (!file) {
-      return NextResponse.json(
+      return Response.json(
         { message: "No file uploaded" },
         { status: 400 }
       );
@@ -60,11 +59,11 @@ export async function POST(req: Request) {
       ).end(buffer);
     });
 
-    return NextResponse.json(result);
+    return Response.json(result);
   } catch (err: any) {
     console.error("UPLOAD IMAGE ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,
@@ -79,14 +78,14 @@ export async function DELETE(req: Request) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -95,18 +94,18 @@ export async function DELETE(req: Request) {
     const { publicId } = await req.json();
     
     if (!publicId) {
-      return NextResponse.json(
+      return Response.json(
         { error: 'Public ID is required' },
         { status: 400 }
       );
     }
 
     const result = await cloudinary.uploader.destroy(publicId);
-    return NextResponse.json(result);
+    return Response.json(result);
   } catch (err: any) {
     console.error("DELETE IMAGE ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,

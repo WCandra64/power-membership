@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { db } from "@/lib/db";
 import { localTime, storeDate, storeTime } from "@/lib/time";
@@ -11,14 +10,14 @@ export async function POST(req: Request) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -84,7 +83,7 @@ export async function POST(req: Request) {
 
     await conn.commit();
 
-    return NextResponse.json({
+    return Response.json({
       message: "Member created",
       memberId,
       username,
@@ -94,7 +93,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error("MEMBER REGISTRATION ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,

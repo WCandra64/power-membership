@@ -99,20 +99,24 @@ async function getTodayAnnouncement() {
 }
 
 async function getActiveAnnouncement() {
-  const tomorrow = localTime();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const dayAfter = localTime();
-  dayAfter.setDate(dayAfter.getDate() + 2);
+  function addDays(day: number) {
+    const date = localTime();
+    date.setDate(date.getDate() + day);
+
+    return date;
+  }
 
   const [tomorrowRows] = await db.execute(
     `
     SELECT pengumuman
     FROM jadwal_manual
     WHERE DATE(waktu_mulai) IN (?, ?, ?)
+    AND pengumuman IS NOT NULL
+    AND pengumuman <> ''
     ORDER BY waktu_mulai ASC
     LIMIT 1
     `,
-    [storeDate(), storeDate(tomorrow), storeDate(dayAfter)]
+    [storeDate(), storeDate(addDays(1)), storeDate(addDays(2))]
   );
 
   return (tomorrowRows as any[])[0];

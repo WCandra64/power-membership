@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { localTime, storeTime } from "@/lib/time";
-import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request,{ params }: { params: Promise<{ id: string }>}
 ) {
@@ -9,14 +8,14 @@ export async function PATCH(req: Request,{ params }: { params: Promise<{ id: str
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -37,14 +36,14 @@ export async function PATCH(req: Request,{ params }: { params: Promise<{ id: str
       (!sess1 &&
       !sess2)
     ) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Incomplete data" },
         { status: 400 }
       );
     }
 
     if (new Date(date) < localTime()) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Date has passed" },
         { status: 400 }
       );
@@ -86,20 +85,20 @@ export async function PATCH(req: Request,{ params }: { params: Promise<{ id: str
     );
 
     if ((rows as any).affectedRows === 0) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Schedule not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Schedule updated",
     });
   } catch (err: any) {
     console.error("UPDATE SCHEDULE ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err.message,
@@ -115,14 +114,14 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -139,20 +138,20 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     );
 
     if ((result as any).affectedRows === 0) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Schedule not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Schedule deleted",
     });
   } catch (err: any) {
     console.error("DELETE SCHEDULE ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err.message,

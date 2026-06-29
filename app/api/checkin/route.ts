@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { getOperationalData } from "@/lib/operationalData";
@@ -9,7 +8,7 @@ export async function POST() {
     const session = await getSession();
 
     if (!session || session.role !== "member") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
@@ -18,7 +17,7 @@ export async function POST() {
     const status = await getOperationalData();
 
     if (!status.operasional) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Gym is closed." },
         { status: 400 }
       );
@@ -40,7 +39,7 @@ export async function POST() {
     const active = rows as { id: number }[];
 
     if (active.length > 0) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Already checked in." },
         { status: 400 }
       );
@@ -59,7 +58,7 @@ export async function POST() {
       [session.memberId as number, now, storeTime(status.waktuAkhir), now]
     );
 
-    return NextResponse.json({
+    return Response.json({
       message: "Check in successful."
     });
   } catch (err) {

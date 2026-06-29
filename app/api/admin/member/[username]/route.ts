@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { storeTime } from "@/lib/time";
@@ -14,14 +13,14 @@ export async function GET(req: Request, { params }: Props) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -77,19 +76,19 @@ export async function GET(req: Request, { params }: Props) {
     );
 
     if (!data.length) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Member tidak ditemukan." },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
+    return Response.json({
       data,
     });
   } catch (err: any) {
     console.error("GET MEMBER ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,
@@ -107,14 +106,14 @@ export async function POST(req: Request, { params }: Props) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -123,7 +122,7 @@ export async function POST(req: Request, { params }: Props) {
     const member: any = await getMember(username);
 
     if (!member.length) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Member tidak ditemukan." },
         { status: 404 }
       );
@@ -139,14 +138,14 @@ export async function POST(req: Request, { params }: Props) {
     await db.getConnection();
 
     if (isNaN(memberId)) {
-      return NextResponse.json(
+      return Response.json(
         { message: "ID member tidak valid." },
         { status: 400 }
       );
     }
 
     if (!startMembership || !endMembership) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Tanggal wajib diisi." },
         { status: 400 }
       );
@@ -159,7 +158,7 @@ export async function POST(req: Request, { params }: Props) {
       [memberId, startMembership, endMembership, storeTime()]
     );
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Membership Extended",
       memberId,
@@ -171,7 +170,7 @@ export async function POST(req: Request, { params }: Props) {
   } catch (err: any) {
     console.error("MEMBERSHIP EXTENSION ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,
@@ -181,21 +180,21 @@ export async function POST(req: Request, { params }: Props) {
   }
 }
 
-export async function PATCH(req: NextRequest, { params }: Props) {
+export async function PATCH(req: Request, { params }: Props) {
   const { username } = await params;
 
   try {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -204,7 +203,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
     const member: any = await getMember(username);
 
     if (!member.length) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Member tidak ditemukan." },
         { status: 404 }
       );
@@ -222,7 +221,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
     } = body;
 
     if (!name?.trim()) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Nama wajib diisi." },
         { status: 400 }
       );
@@ -248,7 +247,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
         memberId,
       ]
     );
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Member Data Updated",
       memberId,
@@ -260,7 +259,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
   } catch (err: any) {
     console.error("EDIT MEMBER ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,
@@ -278,14 +277,14 @@ export async function DELETE(req: Request, { params }: Props) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -294,7 +293,7 @@ export async function DELETE(req: Request, { params }: Props) {
     const member: any = await getMember(username);
 
     if (!member.length) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Member tidak ditemukan." },
         { status: 404 }
       );
@@ -308,7 +307,7 @@ export async function DELETE(req: Request, { params }: Props) {
       [member[0].id]
     );
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Member Deleted",
       memberId: member[0].id,
@@ -317,7 +316,7 @@ export async function DELETE(req: Request, { params }: Props) {
   } catch (err: any) {
     console.error("DELETE MEMBER ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,

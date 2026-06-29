@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import { localTime, storeTime } from "@/lib/time";
-import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -81,14 +80,14 @@ export async function POST(req: Request) {
       ]
     );
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Jadwal berhasil ditambahkan",
     });
   } catch (err: any) {
     console.error("CREATE JADWAL ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,
@@ -103,14 +102,14 @@ export async function GET(req: Request) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -142,7 +141,7 @@ export async function GET(req: Request) {
       [storeTime()]
     );
 
-    return NextResponse.json({
+    return Response.json({
       success: true,
       message: "Jadwal berhasil diambil",
       rows
@@ -150,7 +149,7 @@ export async function GET(req: Request) {
   } catch (err: any) {
     console.error("FETCH JADWAL ERROR:", err);
 
-    return NextResponse.json(
+    return Response.json(
       {
         message: "Server error",
         error: err?.message || err,

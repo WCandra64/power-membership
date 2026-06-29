@@ -9,7 +9,7 @@ export async function POST(req: Request) {
   const user = await login(username, password);
 
   if (!user) {
-    return NextResponse.json(
+    return Response.json(
       { message: "Invalid credentials" },
       { status: 401 }
     );
