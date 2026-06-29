@@ -118,6 +118,10 @@ async function getActiveAnnouncement() {
     [storeDate(tomorrow)]
   );
 
+  console.log("date: ",storeDate());
+  console.log("tomorrow: ",storeDate(tomorrow));
+  console.log("row: ",rows);
+
   return (tomorrowRows as any[])[0];
 }
 
