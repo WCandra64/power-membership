@@ -10,8 +10,6 @@ import { localTime } from "@/lib/time";
 
 export default function MemberPage({ username }: { username: string }) {
 
-  const now = localTime().getTime();
-
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<any>({});
 
@@ -69,6 +67,7 @@ export default function MemberPage({ username }: { username: string }) {
   // LOAD MEMBERS
   useEffect(() => {
     if (!loading) {
+      const now = Date.now();
       setIsTraining(
         member.lastCheckin &&
         member.lastCheckout &&
