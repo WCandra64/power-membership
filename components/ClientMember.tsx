@@ -136,7 +136,7 @@ export default function MemberPage({ username }: { username: string }) {
           </div>
 
           <div className="flex flex-col gap-4 w-full">
-            <PrimaryButton onClick={handleCheckin} disabled={!opData.operasional || member.msStatus || checkinLoading}>{checkinLoading? "Loading..." : isTraining ? "Check Out" : "Check In"}</PrimaryButton>
+            <PrimaryButton onClick={handleCheckin} disabled={!opData.operasional || !member.msStatus || checkinLoading}>{checkinLoading? "Loading..." : isTraining ? "Check Out" : "Check In"}</PrimaryButton>
             <BareButton onClick={() => {setLoading(true); logout();}}>
               <FontAwesomeIcon icon={faSignOutAlt} className="w-4" />
               Log Out
