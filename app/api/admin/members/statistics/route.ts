@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 // import { getMembers } from "@/lib/db/queries/adminMembers";
 
 export async function GET(req: Request) {
@@ -41,7 +41,7 @@ export async function GET(req: Request) {
 }
 
 export async function getStats() {
-  const now = localTime();
+  const now = storeTime();
 
   const [result] = await db.query(
     `

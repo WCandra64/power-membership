@@ -2,7 +2,7 @@
 
 import { login } from "@/lib/auth";
 import { createToken } from "@/lib/session";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -15,7 +15,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   if (!user) {
     return { 
       error: "Username atau password salah!",
-      ts: localTime().getTime()
+      ts: storeTime().getTime()
     };
   }
 

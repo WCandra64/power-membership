@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { localTime } from "./time";
+import { storeTime } from "./time";
 
 // export type JadwalManual = {
 //   id: number;
@@ -17,7 +17,7 @@ import { localTime } from "./time";
 // };
 
 export async function getOperationalData(): Promise<any> {
-  const now = localTime();
+  const now = storeTime();
   console.log("now:", now)
 
   const hour = now.getHours();
@@ -66,7 +66,7 @@ export async function getOperationalData(): Promise<any> {
   return {
     wa1,
     wa2,
-    now: localTime(),
+    now: storeTime(),
     operasional,
     sesi,
     pengumuman,
@@ -85,14 +85,14 @@ async function getActiveJadwal() {
     ORDER BY waktu_mulai DESC
     LIMIT 1
     `,
-    [localTime()]
+    [storeTime()]
   );
 
   return (rows as any[])[0];
 }
 
 async function getActiveAnnouncement() {
-  const tomorrow = localTime();
+  const tomorrow = storeTime();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const [rows] = await db.execute(
     `
@@ -102,7 +102,7 @@ async function getActiveAnnouncement() {
     ORDER BY DATE(waktu_mulai) ASC
     LIMIT 1
     `,
-    [localTime().toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]]
+    [storeTime().toISOString().split("T")[0], tomorrow.toISOString().split("T")[0]]
   );
 
   return (rows as any[])[0];
@@ -115,7 +115,7 @@ async function getCurrentVisitors() {
     FROM visits
     WHERE ? BETWEEN waktu_mulai AND waktu_akhir
     `,
-    [localTime()]
+    [storeTime()]
   );
 
   const total = (rows as { total: number }[])[0].total;
@@ -126,8 +126,8 @@ async function getCurrentVisitors() {
 // let op = false;
 //   let sesi = 0;
 //   let pengumuman: string | undefined = 'Lorem ipsum';
-//   const localTime = new Date().toLocaleString('en-US', {timeZone: 'Asia/Jakarta'});
-//   const waktu = new Date(localTime);
+//   const storeTime = new Date().toLocaleString('en-US', {timeZone: 'Asia/Jakarta'});
+//   const waktu = new Date(storeTime);
 //   // const waktu = new Date("2026-04-09T06:59:00Z");
 //   const jam = new Date("2026-06-12T14:00:00Z").getHours();
 

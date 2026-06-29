@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 // import { getMembers } from "@/lib/db/queries/adminMembers";
 
 export async function GET(req: Request) {
@@ -56,7 +56,7 @@ export async function GET(req: Request) {
 }
 
 export async function getMembers(page = 1, limit = 20, search = "", filter = "Member", sort = "newest") {
-  const now = localTime();
+  const now = storeTime();
   const offset = (page - 1) * limit;
 
   let where: string[] = [];
@@ -191,7 +191,7 @@ export async function getMembers(page = 1, limit = 20, search = "", filter = "Me
 
     LIMIT ? OFFSET ?;
     `,
-    [localTime(), ...params, limit, offset]
+    [storeTime(), ...params, limit, offset]
   );
 
   const [count] = await db.query(

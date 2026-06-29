@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { getOperationalData } from "@/lib/operationalData";
 import { getSession } from "@/lib/session";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (new Date(date) < localTime()) {
+    if (new Date(date) < storeTime()) {
       return NextResponse.json(
         { message: "Date has passed" },
         { status: 400 }
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
         new Date(end),
         false,
         announcement,
-        localTime()
+        storeTime()
       ]
     );
 
@@ -138,7 +138,7 @@ export async function GET(req: Request) {
       )
       ORDER BY waktu_mulai ASC;
       `,
-      [localTime()]
+      [storeTime()]
     );
 
     return NextResponse.json({

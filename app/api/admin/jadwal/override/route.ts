@@ -1,13 +1,13 @@
 import { db } from "@/lib/db";
 import { getOperationalData } from "@/lib/operationalData";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
     const status = await getOperationalData();
-    const now = localTime();
+    const now = storeTime();
     const jadwal = status.jadwal;
     let insert = true;
 

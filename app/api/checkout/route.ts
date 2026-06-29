@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 
 export async function PATCH() {
   const session = await getSession();
@@ -13,7 +13,7 @@ export async function PATCH() {
     );
   }
 
-  const now = localTime();
+  const now = storeTime();
 
   const [rows] = await db.execute(
     `

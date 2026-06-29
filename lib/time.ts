@@ -6,6 +6,16 @@ export function localTime() {
   );
 }
 
+export function storeTime() {
+  const now = new Date();
+
+  return new Date(
+    now.toLocaleString("en-US", {
+      timeZone: "Asia/Jakarta",
+    })
+  );
+}
+
 // SAFE:
 // Date.now()
 // new Date().getTime()

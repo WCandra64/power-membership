@@ -5,7 +5,7 @@ import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faSignOutAlt, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 import timePassed from "@/lib/timePassed";
 import { destroyImage, uploadImage } from "@/lib/imageOperations";
 import { redirect, useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ export default function AdminMemberPage({ username }: { username: string }) {
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<any>({});
 
-  const now = localTime();
+  const now = storeTime();
   const router = useRouter();
 
   // DETERMINE MEMBERSHIP

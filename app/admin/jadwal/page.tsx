@@ -1,14 +1,14 @@
 "use client";
 
 import PrimaryButton from "@/components/PrimaryButton";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 import { faEdit, faRemove, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 
 export default function JadwalPage() {
 
-  const now = localTime();
+  const now = storeTime();
 
   const [jadwal, setJadwal] = useState<any[]>([]);
 
@@ -179,7 +179,7 @@ export default function JadwalPage() {
           </div>
         </div>
         
-        <PrimaryButton disabled={loading || !form.date || form.date < localTime().toISOString().split("T")[0] || (!form.sess1 && !form.sess2) || !form.announcement} onClick={() => handleSchedule(edit ? "edit" : "add", edit ? idJadwal : 0)}>{edit ? "Ubah Jadwal" : "Tambah Jadwal"}</PrimaryButton>
+        <PrimaryButton disabled={loading || !form.date || form.date < storeTime().toISOString().split("T")[0] || (!form.sess1 && !form.sess2) || !form.announcement} onClick={() => handleSchedule(edit ? "edit" : "add", edit ? idJadwal : 0)}>{edit ? "Ubah Jadwal" : "Tambah Jadwal"}</PrimaryButton>
 
       </div>
 

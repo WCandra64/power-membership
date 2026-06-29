@@ -1,9 +1,9 @@
-import { localTime } from "./time";
+import { storeTime } from "./time";
 
 export default function timePassed(date: string | Date | null) {
   if (!date) return "belum tercatat";
 
-  const now = localTime();
+  const now = storeTime();
   const past = new Date(date);
 
   const diffMs = now.getTime() - past.getTime();

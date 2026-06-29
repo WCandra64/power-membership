@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { db } from "@/lib/db";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 import { getSession } from "@/lib/session";
 
 export async function POST(req: Request) {
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
       startMembership,
       endMembership,
     } = await req.json();
-    const now = localTime();
+    const now = storeTime();
 
     const date = now.toISOString().slice(0, 10);
 

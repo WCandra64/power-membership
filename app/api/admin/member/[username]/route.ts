@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 
 type Props = {
   params: Promise<{ username: string }>;
@@ -156,7 +156,7 @@ export async function POST(req: Request, { params }: Props) {
     await db.query(
       `INSERT INTO membership (id_member, tgl_mulai, tgl_kedaluwarsa, created_at)
       VALUES (?, ?, ?, ?)`,
-      [memberId, startMembership, endMembership, localTime()]
+      [memberId, startMembership, endMembership, storeTime()]
     );
 
     return NextResponse.json({
@@ -244,7 +244,7 @@ export async function PATCH(req: NextRequest, { params }: Props) {
         phone || null,
         photoUrl,
         photoId,
-        localTime(),
+        storeTime(),
         memberId,
       ]
     );

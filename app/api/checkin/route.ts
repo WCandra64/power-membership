@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { getOperationalData } from "@/lib/operationalData";
-import { localTime } from "@/lib/time";
+import { storeTime } from "@/lib/time";
 
 export async function POST() {
   try {
@@ -24,7 +24,7 @@ export async function POST() {
       );
     }
 
-    const now = localTime();
+    const now = storeTime();
 
     const [rows] = await db.execute(
       `
