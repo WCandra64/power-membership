@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       `,
       [
         now,
-        status.waktuAkhir,
+        storeTime(status.waktuAkhir),
         operational,
         announcement,
         now,
