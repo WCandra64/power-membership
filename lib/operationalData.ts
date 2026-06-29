@@ -24,7 +24,6 @@ export async function getOperationalData(): Promise<any> {
 
   let sesi: 0 | 1 | 2 = 0;
   let waktuAkhir = now;
-  const wa1 = waktuAkhir;
   console.log("wa:", waktuAkhir)
 
   if (hour < 11) {
@@ -43,8 +42,6 @@ export async function getOperationalData(): Promise<any> {
     waktuAkhir.setDate(waktuAkhir.getDate() + 1);
     waktuAkhir.setHours(7, 0, 0, 0);
   }
-  console.log("wa2:", waktuAkhir)
-  const wa2 = waktuAkhir;
 
   // Default operation
   let operasional = sesi !== 0;
@@ -63,8 +60,14 @@ export async function getOperationalData(): Promise<any> {
     // waktuAkhir = jadwal.waktu_akhir;
   }
 
+  const tomorrow = localTime();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
   return {
-    now: localTime(),
+    debug: {
+      today: storeDate(),
+      tomorrow: storeDate(tomorrow)
+    },
     operasional,
     sesi,
     pengumuman,
@@ -117,10 +120,6 @@ async function getActiveAnnouncement() {
     `,
     [storeDate(tomorrow)]
   );
-
-  console.log("date: ",storeDate());
-  console.log("tomorrow: ",storeDate(tomorrow));
-  console.log("row: ",rows);
 
   return (tomorrowRows as any[])[0];
 }
