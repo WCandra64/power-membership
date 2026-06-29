@@ -71,7 +71,8 @@ export async function POST(req: Request) {
     return Response.json({
       success: true,
       message: "Operational data updated",
-      endtime: storeTime(status.waktuAkhir)
+      schedtime: new Date(jadwal.waktu_akhir).getTime(),
+      endtime: new Date(status.waktuAkhir).getTime()
     });
   } catch (err) {
     console.error(err);
