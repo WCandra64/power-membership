@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { logout } from "@/app/actions/logout";
 import { useEffect, useState } from "react";
-import { storeTime } from "@/lib/time";
+import { localTime } from "@/lib/time";
 
 export default function MemberPage({ username }: { username: string }) {
 
-  const now = storeTime().getTime();
+  const now = localTime().getTime();
 
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<any>({});

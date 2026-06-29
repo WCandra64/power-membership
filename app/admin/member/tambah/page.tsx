@@ -7,13 +7,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { faRemove } from "@fortawesome/free-solid-svg-icons";
-import { storeTime } from "@/lib/time";
+import { localTime } from "@/lib/time";
 import { uploadImage } from "@/lib/imageOperations";
 
 export default function AddMemberPage() {
 
-  const now = storeTime();
-  const toDate = storeTime().toISOString().split("T")[0];
+  const now = localTime();
+  const toDate = localTime().toISOString().split("T")[0];
   
   const [loading, setLoading] = useState(false);
 

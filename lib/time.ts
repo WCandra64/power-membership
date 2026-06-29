@@ -6,14 +6,15 @@ export function localTime() {
   );
 }
 
-export function storeTime() {
-  const now = new Date();
+export function storeTime(time = localTime()) {
+  return time
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+}
 
-  return new Date(
-    now.toLocaleString("en-US", {
-      timeZone: "Asia/Jakarta",
-    })
-  );
+export function storeDate(date = localTime()) {
+  return date.toISOString().split(" ")[0];
 }
 
 // SAFE:

@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { getOperationalData } from "@/lib/operationalData";
 import { getSession } from "@/lib/session";
-import { storeTime } from "@/lib/time";
+import { localTime, storeTime } from "@/lib/time";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (new Date(date) < storeTime()) {
+    if (new Date(date) < localTime()) {
       return NextResponse.json(
         { message: "Date has passed" },
         { status: 400 }

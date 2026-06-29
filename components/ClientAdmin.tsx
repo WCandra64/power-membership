@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faCalendarAlt, faCaretDown, faCaretUp, faCertificate, faCheck, faCheckCircle, faPlus, faPlusCircle, faSearch, faSort, faStreetView, faUserAltSlash, faUsers } from "@fortawesome/free-solid-svg-icons";
 import PrimaryButton from '@/components/PrimaryButton'
 import ScrollTop from "@/components/ScrollTop";
-import { storeTime } from "@/lib/time";
+import { localTime } from "@/lib/time";
 import timePassed from "@/lib/timePassed";
 
 type Member = {
@@ -145,7 +145,7 @@ export default function AdminPage() {
   function isTraining(checkIn: string | Date | null, checkOut: string | Date | null) {
     if (!checkIn || !checkOut) return false;
 
-    const now = storeTime().getTime();
+    const now = localTime().getTime();
 
     return (
       now >= new Date(checkIn).getTime() &&

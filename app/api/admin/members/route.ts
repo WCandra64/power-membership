@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { storeTime } from "@/lib/time";
+import { storeDate, storeTime } from "@/lib/time";
 // import { getMembers } from "@/lib/db/queries/adminMembers";
 
 export async function GET(req: Request) {
@@ -57,6 +57,7 @@ export async function GET(req: Request) {
 
 export async function getMembers(page = 1, limit = 20, search = "", filter = "Member", sort = "newest") {
   const now = storeTime();
+  const date = storeDate();
   const offset = (page - 1) * limit;
 
   let where: string[] = [];
@@ -85,7 +86,7 @@ export async function getMembers(page = 1, limit = 20, search = "", filter = "Me
           AND ms.tgl_kedaluwarsa
       `);
 
-      params.push(now);
+      params.push(date);
       break;
 
     case "Latihan":
@@ -103,7 +104,7 @@ export async function getMembers(page = 1, limit = 20, search = "", filter = "Me
           AND ms.tgl_kedaluwarsa
       `);
 
-      params.push(now);
+      params.push(date);
       break;
   }
 
@@ -191,7 +192,7 @@ export async function getMembers(page = 1, limit = 20, search = "", filter = "Me
 
     LIMIT ? OFFSET ?;
     `,
-    [storeTime(), ...params, limit, offset]
+    [date, ...params, limit, offset]
   );
 
   const [count] = await db.query(

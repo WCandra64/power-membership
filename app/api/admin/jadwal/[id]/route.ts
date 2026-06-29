@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/session";
-import { storeTime } from "@/lib/time";
+import { localTime, storeTime } from "@/lib/time";
 import { NextResponse } from "next/server";
 
 export async function PATCH(req: Request,{ params }: { params: Promise<{ id: string }>}
@@ -43,7 +43,7 @@ export async function PATCH(req: Request,{ params }: { params: Promise<{ id: str
       );
     }
 
-    if (new Date(date) < storeTime()) {
+    if (new Date(date) < localTime()) {
       return NextResponse.json(
         { message: "Date has passed" },
         { status: 400 }
@@ -59,8 +59,10 @@ export async function PATCH(req: Request,{ params }: { params: Promise<{ id: str
       startHour = 15;
     }
 
-    const start = new Date(date).setHours(startHour, 0, 0, 0);
-    const end = new Date(date).setHours(endHour, 0, 0, 0);
+    const start = new Date(date);
+    start.setHours(startHour, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(endHour, 0, 0, 0);
 
     const [rows] = await db.query(
       `
@@ -74,8 +76,8 @@ export async function PATCH(req: Request,{ params }: { params: Promise<{ id: str
       WHERE id = ?
       `,
       [
-        new Date(start),
-        new Date(end),
+        storeTime(start),
+        storeTime(end),
         false,
         announcement,
         storeTime(),

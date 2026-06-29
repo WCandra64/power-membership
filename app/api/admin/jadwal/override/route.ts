@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { getOperationalData } from "@/lib/operationalData";
-import { storeTime } from "@/lib/time";
+import { storeDate, storeTime } from "@/lib/time";
 
 export async function POST(req: Request) {
   try {
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       insert = false;
     }
 
-    const temporaryOverride = jadwal && status.sesi === 0 && new Date(jadwal.waktu_akhir).getTime() === new Date(status.waktuAkhir).getTime();
+    const temporaryOverride = jadwal && status.sesi === 0 && jadwal.waktu_akhir === status.waktuAkhir;
 
     if (temporaryOverride) {
       insert = false;
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         UPDATE jadwal_manual
         SET pengumuman = ?, updated_at = ?
         WHERE DATE(waktu_mulai) = ?
-      `, [body.pengumuman, now, now.toISOString().split("T")[0]]
+      `, [body.pengumuman, now, storeDate()]
       );
 
     const announcement = body.pengumuman ?? status.pengumuman ?? "";

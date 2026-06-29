@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import { db } from "@/lib/db";
-import { storeTime } from "@/lib/time";
+import { localTime, storeDate, storeTime } from "@/lib/time";
 import { getSession } from "@/lib/session";
 
 export async function POST(req: Request) {
@@ -32,9 +32,9 @@ export async function POST(req: Request) {
       startMembership,
       endMembership,
     } = await req.json();
-    const now = storeTime();
 
-    const date = now.toISOString().slice(0, 10);
+    const now = localTime();
+    const dbNow = storeTime();
 
     conn = await db.getConnection();
 
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       INSERT INTO members (nama, no_telp, foto_url, foto_id, created_at)
       VALUES (?, ?, ?, ?, ?)
       `,
-      [name, phone, photoUrl, photoId, now]
+      [name, phone, photoUrl, photoId, dbNow]
     );
     console.log("phone", phone)
     console.log(memberResult);
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     const minutes = String(now.getMinutes()).padStart(2, "0");
 
     const [rows]: any = await db.query(
-      "SELECT COUNT(*) as count FROM users WHERE DATE(created_at) = ?", [now]
+      "SELECT COUNT(*) as count FROM users WHERE DATE(created_at) = ?", [storeDate()]
     );
     const counter = String(rows[0].count + 1).padStart(2, "0");
 
@@ -72,14 +72,14 @@ export async function POST(req: Request) {
     await db.query(
       `INSERT INTO users (id_member, username, password, role, created_at)
        VALUES (?, ?, ?, 'member', ?)`,
-      [memberId, username, hashedPassword, now]
+      [memberId, username, hashedPassword, dbNow]
     );
 
     // 3. CREATE MEMBERSHIP
     await db.query(
       `INSERT INTO membership (id_member, tgl_mulai, tgl_kedaluwarsa, created_at)
        VALUES (?, ?, ?, ?)`,
-      [memberId, startMembership, endMembership, now]
+      [memberId, startMembership, endMembership, dbNow]
     );
 
     await conn.commit();
