@@ -145,7 +145,7 @@ export default function AdminPage() {
   function isTraining(checkIn: string | Date | null, checkOut: string | Date | null) {
     if (!checkIn || !checkOut) return false;
 
-    const now = Date.now();
+    const now = localTime().getTime();
 
     return (
       now >= new Date(checkIn).getTime() &&

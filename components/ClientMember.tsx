@@ -6,8 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { logout } from "@/app/actions/logout";
 import { useEffect, useState } from "react";
+import { localTime } from "@/lib/time";
 
 export default function MemberPage({ username }: { username: string }) {
+
+  const now = localTime().getTime();
 
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<any>({});
@@ -69,8 +72,8 @@ export default function MemberPage({ username }: { username: string }) {
       setIsTraining(
         member.lastCheckin &&
         member.lastCheckout &&
-        Date.now() >= new Date(member.lastCheckin).getTime() &&
-        Date.now() <= new Date(member.lastCheckout).getTime()
+        now >= new Date(member.lastCheckin).getTime() &&
+        now <= new Date(member.lastCheckout).getTime()
       );
     }
   }, [member]);
