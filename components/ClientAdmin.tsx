@@ -302,7 +302,7 @@ export default function AdminPage() {
             className={`flex flex-col gap-1 group ${c.isActive ? c.activeColor+" shadow-sm/40" : c.defaultColor} rounded-sm px-4 py-2 border-2 border-stroke cursor-pointer hover:${c.activeColor} hover:text-background select-none`}
           >
             <div className="flex gap-2">
-              <span className={`${c.isActive ? "text-background" : "text-stroke"} font-extrabold italic text-sm group-hover:text-background`}>{c.name === "Aktif" ? stats.active : c.name === "Nonaktif" ? stats.inactive : c.name === "Latihan" ? stats.training : stats.total}</span>
+              <span className={`${c.isActive ? "text-background" : "text-stroke"} font-extrabold italic text-sm group-hover:text-background`}>{loading ? 999 : c.name === "Aktif" ? stats.active : c.name === "Nonaktif" ? stats.inactive : c.name === "Latihan" ? stats.training : stats.total}</span>
 
               <FontAwesomeIcon icon={c.icon} size="xl" className={`w-6 ${!c.isActive ? c.iconColor : "text-background"} group-hover:text-background`} />
             </div>
