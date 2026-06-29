@@ -15,7 +15,7 @@ export async function loginAction(prevState: any, formData: FormData) {
   if (!user) {
     return { 
       error: "Username atau password salah!",
-      ts: localTime()
+      ts: localTime().getTime()
     };
   }
 
