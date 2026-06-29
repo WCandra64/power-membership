@@ -18,11 +18,13 @@ import { localTime } from "./time";
 
 export async function getOperationalData(): Promise<any> {
   const now = localTime();
+  console.log("now:", now)
 
   const hour = now.getHours();
 
   let sesi: 0 | 1 | 2 = 0;
   let waktuAkhir = now;
+  console.log("wa:", waktuAkhir)
 
   if (hour < 11) {
     if (hour >= 7) {
@@ -40,6 +42,7 @@ export async function getOperationalData(): Promise<any> {
     waktuAkhir.setDate(waktuAkhir.getDate() + 1);
     waktuAkhir.setHours(7, 0, 0, 0);
   }
+  console.log("wa2:", waktuAkhir)
 
   // Default operation
   let operasional = sesi !== 0;

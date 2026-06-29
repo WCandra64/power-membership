@@ -1,7 +1,7 @@
 export function localTime() {
   const now = new Date();
 
-  console.log(new Date(
+  console.log("localtime(): ",new Date(
     now.toLocaleString("en-US", {
       timeZone: "Asia/Jakarta",
     })
