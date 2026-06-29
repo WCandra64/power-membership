@@ -8,6 +8,7 @@ import { getOperationalData } from "@/lib/operationalData";
 export default async function Home() {
 
   const opData = await getOperationalData();
+  console.log(opData);
 
   return (
     <main className="h-[calc(100dvh-theme(spacing.12))] overflow-y-scroll snap-y snap-mandatory scroll-smooth custom-scrollbar">
