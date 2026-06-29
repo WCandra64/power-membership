@@ -18,13 +18,11 @@ import { localTime, storeDate, storeTime } from "./time";
 
 export async function getOperationalData(): Promise<any> {
   const now = localTime();
-  console.log("now:", now)
 
   const hour = now.getHours();
 
   let sesi: 0 | 1 | 2 = 0;
   let waktuAkhir = now;
-  console.log("wa:", waktuAkhir)
 
   if (hour < 11) {
     if (hour >= 7) {
@@ -45,32 +43,25 @@ export async function getOperationalData(): Promise<any> {
 
   // Default operation
   let operasional = sesi !== 0;
-  let pengumuman = "";
 
   const jadwal = await getActiveJadwal();
 
   const pengumumanRow = await getActiveAnnouncement();
-  pengumuman = pengumumanRow?.pengumuman ?? "";
+  const pengumumanAktif = pengumumanRow?.pengumuman ?? "";
+  const pengumumanHariIniRow = await getTodayAnnouncement();
+  const pengumumanHariIni = pengumumanHariIniRow?.pengumuman ?? "";
   
   const pengunjung = await getCurrentVisitors();
 
   if (jadwal) {
     operasional = jadwal.status_operasional;
-    // pengumuman = jadwal.pengumuman;
-    // waktuAkhir = jadwal.waktu_akhir;
   }
 
-  const tomorrow = localTime();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
   return {
-    debug: {
-      today: storeDate(),
-      tomorrow: storeDate(tomorrow)
-    },
     operasional,
     sesi,
-    pengumuman,
+    pengumumanAktif,
+    pengumumanHariIni,
     jadwal,
     pengunjung,
     waktuAkhir,
@@ -92,8 +83,8 @@ async function getActiveJadwal() {
   return (rows as any[])[0];
 }
 
-async function getActiveAnnouncement() {
-  const [rows] = await db.execute(
+async function getTodayAnnouncement() {
+  const [todayRows] = await db.execute(
     `
     SELECT pengumuman
     FROM jadwal_manual
@@ -104,21 +95,24 @@ async function getActiveAnnouncement() {
     [storeDate()]
   );
 
-  if ((rows as any[]).length > 0)
-    return (rows as any[])[0];
+  return (todayRows as any[])[0];
+}
 
+async function getActiveAnnouncement() {
   const tomorrow = localTime();
   tomorrow.setDate(tomorrow.getDate() + 1);
+  const dayAfter = localTime();
+  dayAfter.setDate(dayAfter.getDate() + 2);
 
   const [tomorrowRows] = await db.execute(
     `
     SELECT pengumuman
     FROM jadwal_manual
-    WHERE DATE(waktu_mulai) = ?
+    WHERE DATE(waktu_mulai) IN (?, ?, ?)
     ORDER BY waktu_mulai ASC
     LIMIT 1
     `,
-    [storeDate(tomorrow)]
+    [storeDate(), storeDate(tomorrow), storeDate(dayAfter)]
   );
 
   return (tomorrowRows as any[])[0];

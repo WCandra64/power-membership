@@ -124,7 +124,7 @@ export default async function Home() {
           </div>
 
           <p className="text-xs tracking-wide text-prime">
-            {opData.pengumuman || ""}
+            {opData.pengumumanAktif || ""}
           </p>
         </div>
 

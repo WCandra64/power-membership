@@ -22,12 +22,6 @@ export default async function MemberServer({ params }: Props) {
 
   console.log("username: "+username);
 
-  const opStatus = await getOperationalData();
-
-  // if (session.username !== params) {
-  //   redirect("/login");
-  // }
-
   return (
     <MemberPage username={username}  />
   );

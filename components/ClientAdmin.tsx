@@ -120,9 +120,10 @@ export default function AdminPage() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        status: type === 1 ? !opData.operasional : opData.operasional,
-        pengumuman: type === 2 ? pengumuman : opData.pengumuman,
+      body: type === 1 ? JSON.stringify({
+        status: !opData.operasional,
+      }) : JSON.stringify({
+        pengumuman: pengumuman,
       }),
     });
 
@@ -220,7 +221,7 @@ export default function AdminPage() {
   }, [categories]);
 
   useEffect(() => {
-    setPengumuman(opData.pengumuman);
+    setPengumuman(opData.pengumumanHariIni);
   }, [opData]);
 
   // useEffect(() => {
@@ -275,7 +276,7 @@ export default function AdminPage() {
 
           <button
             type="button"
-            disabled={loading || (pengumuman === opData.pengumuman || (pengumuman === "" && opData.pengumuman === ""))}
+            disabled={loading || (pengumuman === opData.pengumumanHariIni || (pengumuman === "" && opData.pengumumanHariIni === ""))}
             onClick={() => changeOpData(2)}
             className="bg-green-500 px-2 text-background shadow-sm/40 rounded-sm cursor-pointer hover:bg-stroke disabled:bg-paragraph/10 disabled:text-paragraph/20 disabled:shadow-none"
           >

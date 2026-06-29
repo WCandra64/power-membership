@@ -1,102 +1,70 @@
 import { db } from "@/lib/db";
 import { getOperationalData } from "@/lib/operationalData";
+import { getSession } from "@/lib/session";
 import { storeDate, storeTime } from "@/lib/time";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const session = await getSession();
+    if (!session) {
+      return Response.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    if (session.role !== "admin") {
+      return Response.json(
+        { message: "Forbidden" },
+        { status: 403 }
+      );
+    }
 
+    const body = await req.json();
     const status = await getOperationalData();
     const now = storeTime();
     const jadwal = status.jadwal;
+
     let insert = true;
     const adjustedEndTime = new Date(
       status.waktuAkhir.getTime() - 7 * 60 * 60 * 1000
     );
-
-    if (jadwal && status.sesi !== 0) {
-      insert = false;
-    }
+    
+    if (jadwal && status.sesi !== 0) insert = false;
 
     const temporaryOverride = jadwal && status.sesi === 0 && new Date(jadwal.waktu_akhir).getTime() === adjustedEndTime.getTime();
-
-    if (temporaryOverride) {
-      insert = false;
-    }
-
+    if (temporaryOverride) insert = false;
     const operational = body.status ?? jadwal?.status_operasional ?? status.operasional;
 
-    if (body.pengumuman !== undefined && body.pengumuman !== status.pengumuman)
-      await db.execute(`
-        UPDATE jadwal_manual
-        SET pengumuman = ?, updated_at = ?
-        WHERE DATE(waktu_mulai) = ?
-      `, [body.pengumuman, now, storeDate()]
+    const announcement = body.pengumuman ?? status.pengumumanHariIni ?? "";
+    if (body.pengumuman !== undefined && status.pengumumanHariIni !== "" && body.pengumuman !== status.pengumumanHariIni)
+      await db.execute(
+        ` UPDATE jadwal_manual SET pengumuman = ?, updated_at = ? WHERE DATE(waktu_mulai) = ? `,
+        [body.pengumuman, now, storeDate()]
       );
-
-    const announcement = body.pengumuman ?? status.pengumuman ?? "";
-      
-    await db.execute(jadwal && !insert ?
-      `
-      UPDATE jadwal_manual 
-      SET
-        waktu_mulai = ?,
-        waktu_akhir = ?,
-        status_operasional = ?,
-        pengumuman = ?,
-        updated_at = ?
-      WHERE id = ${jadwal.id}
-      ` : `
-      INSERT INTO jadwal_manual (
-        waktu_mulai,
-        waktu_akhir,
-        status_operasional,
-        pengumuman,
-        created_at
-      )
-      VALUES (
-        ?,
-        ?,
-        ?,
-        ?,
-        ?
-      )
-      `,
-      [
-        now,
-        storeTime(status.waktuAkhir),
-        operational,
-        announcement,
-        now,
-      ]
-    );
-
+    else
+      await db.execute(jadwal && !insert ?
+        ` UPDATE jadwal_manual 
+        SET
+          waktu_mulai = ?, waktu_akhir = ?, status_operasional = ?, pengumuman = ?, updated_at = ?
+        WHERE id = ${jadwal.id}
+        ` : `
+        INSERT INTO jadwal_manual (waktu_mulai, waktu_akhir, status_operasional, pengumuman, created_at)
+        VALUES (?, ?, ?, ?, ?) `,
+        [now, storeTime(status.waktuAkhir), operational, announcement, now,]
+      );
     if(body.status === false)
       await db.execute(
-        `
-        UPDATE visits
+        ` UPDATE visits
         SET waktu_akhir = ?, updated_at = ?
-        WHERE ? BETWEEN waktu_mulai AND waktu_akhir
-        `,
+        WHERE ? BETWEEN waktu_mulai AND waktu_akhir `,
         [now, now, now]
       );
-
-    return Response.json({
-      success: true,
-      message: "Operational data updated",
-      schedtime: new Date(jadwal.waktu_akhir).getTime(),
-      endtime: adjustedEndTime.getTime()
-    });
-  } catch (err) {
-    console.error(err);
-
+    return Response.json({ success: true, message: "Operational data updated", });
+  } catch (err: any) {
+    console.error("OVERRIDE ERROR:", err);
     return Response.json(
-      {
-        message: "Server error",
-      },
-      {
-        status: 500,
-      }
+      { message: "Server error", },
+      { status: 500, }
     );
   }
 }

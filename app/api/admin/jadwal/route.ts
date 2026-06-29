@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { getOperationalData } from "@/lib/operationalData";
 import { getSession } from "@/lib/session";
 import { localTime, storeTime } from "@/lib/time";
 import { NextResponse } from "next/server";
@@ -9,14 +8,14 @@ export async function POST(req: Request) {
     const session = await getSession();
 
     if (!session) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
     if (session.role !== "admin") {
-      return NextResponse.json(
+      return Response.json(
         { message: "Forbidden" },
         { status: 403 }
       );
@@ -35,14 +34,14 @@ export async function POST(req: Request) {
       (!sess1 &&
       !sess2)
     ) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Incomplete data" },
         { status: 400 }
       );
     }
 
     if (new Date(date) < localTime()) {
-      return NextResponse.json(
+      return Response.json(
         { message: "Date has passed" },
         { status: 400 }
       );
