@@ -134,7 +134,7 @@ export default function JadwalPage() {
                   const val = new Date(e.target.value).setHours(23, 59, 59, 0);
                   setForm({
                     ...form,
-                    date: new Date(val) < new Date(now) ? "" : e.target.value
+                    date: new Date(val) < now ? "" : e.target.value
                   })
                 }}
                 className="placeholder-shown:bg-paragraph/10 rounded-lg border px-4 py-2 text-sm cursor-pointer"

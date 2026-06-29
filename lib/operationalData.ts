@@ -22,7 +22,7 @@ export async function getOperationalData(): Promise<any> {
   const hour = now.getHours();
 
   let sesi: 0 | 1 | 2 = 0;
-  let waktuAkhir = new Date(now);
+  let waktuAkhir = now;
 
   if (hour < 11) {
     if (hour >= 7) {
