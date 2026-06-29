@@ -15,7 +15,7 @@ export default function MemberPage({ username }: { username: string }) {
 
   const [isTraining, setIsTraining] = useState(false);
 
-  const [opStatus, setOpStatus] = useState<any>({}); 
+  const [opData, setOpData] = useState<any>({}); 
   const [checkinLoading, setCheckinLoading] = useState(false);
 
   async function handleCheckin() {
@@ -56,7 +56,7 @@ export default function MemberPage({ username }: { username: string }) {
       console.log(opJson);
 
       setMember(memberJson.data[0]);
-      setOpStatus(opJson);
+      setOpData(opJson);
 
       setLoading(false);
     }
@@ -68,7 +68,7 @@ export default function MemberPage({ username }: { username: string }) {
   useEffect(() => {
     if (!loading) {
       const now = Date.now();
-      
+
       setIsTraining(
         member.lastCheckin &&
         member.lastCheckout &&
@@ -136,7 +136,7 @@ export default function MemberPage({ username }: { username: string }) {
           </div>
 
           <div className="flex flex-col gap-4 w-full">
-            <PrimaryButton onClick={handleCheckin} disabled={!opStatus.operasional || checkinLoading}>{checkinLoading? "Loading..." : isTraining ? "Check Out" : "Check In"}</PrimaryButton>
+            <PrimaryButton onClick={handleCheckin} disabled={!opData.operasional || member.msStatus || checkinLoading}>{checkinLoading? "Loading..." : isTraining ? "Check Out" : "Check In"}</PrimaryButton>
             <BareButton onClick={() => {setLoading(true); logout();}}>
               <FontAwesomeIcon icon={faSignOutAlt} className="w-4" />
               Log Out
