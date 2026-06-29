@@ -31,7 +31,8 @@ export default function AdminPage() {
   // const [loading, setLoading] = useState(true);
   const [opLoading, setOpLoading] = useState(true);
   const [memberLoading, setMemberLoading] = useState(true);
-  const loading = opLoading || memberLoading;
+  const [statsLoading, setStatsLoading] = useState(true);
+  const loading = opLoading || memberLoading || statsLoading;
 
   const [page, setPage] = useState(1);
 
@@ -179,14 +180,19 @@ export default function AdminPage() {
   }
 
   async function fetchStats() {
-    const res = await fetch(`/api/admin/members/statistics`, {
-      credentials: "include",
-    });
+    setStatsLoading(true);
+    try {
+      const res = await fetch(`/api/admin/members/statistics`, {
+        credentials: "include",
+      });
 
-    const json = await res.json();
-    console.log(json.data[0]);
+      const json = await res.json();
+      console.log(json.data[0]);
 
-    setStats(json.data[0]);
+      setStats(json.data[0]);
+    } finally {
+      setStatsLoading(false);
+    }
   }
 
   // LOAD MEMBERS
