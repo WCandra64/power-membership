@@ -5,6 +5,8 @@ import { faCalendarAlt, faChevronDown, faClock, faLocationDot } from "@fortaweso
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import { getOperationalData } from "@/lib/operationalData";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
 
   const opData = await getOperationalData();
