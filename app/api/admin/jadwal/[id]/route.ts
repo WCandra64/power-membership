@@ -43,7 +43,7 @@ export async function PATCH(req: Request,{ params }: { params: Promise<{ id: str
       );
     }
 
-    if (new Date(date) < new Date(localTime())) {
+    if (new Date(date) < localTime()) {
       return NextResponse.json(
         { message: "Date has passed" },
         { status: 400 }

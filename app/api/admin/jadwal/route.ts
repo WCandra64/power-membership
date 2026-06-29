@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (new Date(date) < new Date(localTime())) {
+    if (new Date(date) < localTime()) {
       return NextResponse.json(
         { message: "Date has passed" },
         { status: 400 }
