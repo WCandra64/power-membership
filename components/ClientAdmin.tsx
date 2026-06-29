@@ -33,16 +33,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
 
-  const member = {
-    username: "abc123",
-    name: "John Doe",
-    img: "/user.png",
-    isActive: true,
-    activeDate: "07/06/2026",
-    expiredDate: "06/07/2026",
-    checkedIn: true,
-  }
-
   const [opData, setOpData] = useState<any>({}); 
 
   const [pengumuman, setPengumuman] = useState("");
@@ -145,7 +135,7 @@ export default function AdminPage() {
   function isTraining(checkIn: string | Date | null, checkOut: string | Date | null) {
     if (!checkIn || !checkOut) return false;
 
-    const now = localTime().getTime();
+    const now = Date.now();
 
     return (
       now >= new Date(checkIn).getTime() &&
