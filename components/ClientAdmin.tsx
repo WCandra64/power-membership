@@ -123,8 +123,7 @@ export default function AdminPage() {
       const json = await res.json();
 
       if (res.ok) {
-        console.log(json)
-        await fetchOpData();
+        window.location.reload();
       } 
     } finally {
       setLoading(false);
