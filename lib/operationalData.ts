@@ -90,21 +90,35 @@ async function getActiveJadwal() {
 }
 
 async function getActiveAnnouncement() {
-  const tomorrow = localTime();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  
   const [rows] = await db.execute(
     `
     SELECT pengumuman
     FROM jadwal_manual
-    WHERE DATE(waktu_mulai) IN (?, ?)
-    ORDER BY DATE(waktu_mulai) ASC
+    WHERE DATE(waktu_mulai) = ?
+    ORDER BY waktu_mulai ASC
     LIMIT 1
     `,
-    [storeDate(), storeDate(tomorrow)]
+    [storeDate()]
   );
 
-  return (rows as any[])[0];
+  if ((rows as any[]).length > 0)
+    return (rows as any[])[0];
+
+  const tomorrow = localTime();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const [tomorrowRows] = await db.execute(
+    `
+    SELECT pengumuman
+    FROM jadwal_manual
+    WHERE DATE(waktu_mulai) = ?
+    ORDER BY waktu_mulai ASC
+    LIMIT 1
+    `,
+    [storeDate(tomorrow)]
+  );
+
+  return (tomorrowRows as any[])[0];
 }
 
 async function getCurrentVisitors() {
