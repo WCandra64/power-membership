@@ -57,8 +57,10 @@ export async function POST(req: Request) {
       startHour = 15;
     }
 
-    const start = new Date(date).setHours(startHour, 0, 0, 0);
-    const end = new Date(date).setHours(endHour, 0, 0, 0);
+    const start = new Date(date);
+    start.setHours(startHour, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(endHour, 0, 0, 0);
 
     await db.query(
       `
@@ -72,8 +74,8 @@ export async function POST(req: Request) {
       VALUES (?, ?, ?, ?, ?)
       `,
       [
-        new Date(start),
-        new Date(end),
+        storeTime(start),
+        storeTime(end),
         false,
         announcement,
         storeTime()
