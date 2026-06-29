@@ -260,7 +260,7 @@ export default function AdminPage() {
 
           <button
             type="button"
-            disabled={pengumuman === "" || loading || pengumuman === opData.pengumuman}
+            disabled={loading || (pengumuman === opData.pengumuman || (pengumuman === "" && opData.pengumuman === ""))}
             onClick={() => changeOpData(2)}
             className="bg-green-500 px-2 text-background shadow-sm/40 rounded-sm cursor-pointer hover:bg-stroke disabled:bg-paragraph/10 disabled:text-paragraph/20 disabled:shadow-none"
           >
