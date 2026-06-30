@@ -6,73 +6,47 @@ type Props = {
   params: Promise<{ username: string }>;
 }
 
-export async function GET(req: Request, { params }: Props) {
+export async function GET({ params }: Props) {
   const { username } = await params;
 
   try {
     const session = await getSession();
-
-    if (!session) {
+    if (!session || session.role !== "admin") {
       return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    if (session.role !== "admin") {
-      return Response.json(
-        { message: "Forbidden" },
-        { status: 403 }
-      );
-    }
-
-    const [data]: any = await db.query(
-      `
+    const [data]: any = await db.query(`
       SELECT
-        m.*,
-        u.username,
-
-        ms.tgl_mulai AS msStart,
-        ms.tgl_kedaluwarsa AS msEnd,
-
+        m.*, u.username, 
+        ms.tgl_mulai AS msStart, ms.tgl_kedaluwarsa AS msEnd,
         CASE
           WHEN CURDATE() BETWEEN ms.tgl_mulai AND ms.tgl_kedaluwarsa
-          THEN TRUE
-          ELSE FALSE
+          THEN TRUE ELSE FALSE
         END AS msStatus,
-
-        v.waktu_mulai AS lastCheckin,
-        v.waktu_akhir AS lastCheckout
+        v.waktu_mulai AS lastCheckin, v.waktu_akhir AS lastCheckout
 
       FROM members m
       LEFT JOIN users u ON u.id_member = m.id
-
       LEFT JOIN (
-        SELECT *
-        FROM membership
+        SELECT * FROM membership
         WHERE (id_member, tgl_kedaluwarsa) IN (
-          SELECT id_member, MAX(tgl_kedaluwarsa)
-          FROM membership
+          SELECT id_member, MAX(tgl_kedaluwarsa) FROM membership
           GROUP BY id_member
         )
-      ) ms
-        ON ms.id_member = m.id
-
+      ) ms ON ms.id_member = m.id
       LEFT JOIN (
-        SELECT *
-        FROM visits
+        SELECT * FROM visits
         WHERE (id_member, waktu_mulai) IN (
-          SELECT id_member, MAX(waktu_mulai)
-          FROM visits
+          SELECT id_member, MAX(waktu_mulai) FROM visits
           GROUP BY id_member
         )
-      ) v
-        ON v.id_member = m.id
+      ) v ON v.id_member = m.id
 
-      WHERE u.username = ?
-      LIMIT 1
-      `,
-      [username]
+      WHERE u.username = ? LIMIT 1
+      `, [username]
     );
 
     if (!data.length) {
@@ -82,17 +56,11 @@ export async function GET(req: Request, { params }: Props) {
       );
     }
 
-    return Response.json({
-      data,
-    });
+    return Response.json({ data, });
   } catch (err: any) {
-    console.error("GET MEMBER ERROR:", err);
-
+    console.error("GET DETAIL MEMBER ERROR:", err);
     return Response.json(
-      {
-        message: "Server error",
-        error: err?.message || err,
-      },
+      { message: "Server error", error: err?.message || err, },
       { status: 500 }
     );
   }
@@ -104,23 +72,14 @@ export async function POST(req: Request, { params }: Props) {
 
   try {
     const session = await getSession();
-
-    if (!session) {
+    if (!session || session.role !== "admin") {
       return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    if (session.role !== "admin") {
-      return Response.json(
-        { message: "Forbidden" },
-        { status: 403 }
-      );
-    }
-
     const member: any = await getMember(username);
-
     if (!member.length) {
       return Response.json(
         { message: "Member tidak ditemukan." },
@@ -129,14 +88,8 @@ export async function POST(req: Request, { params }: Props) {
     }
 
     const memberId = member[0].id;
-
-    const {
-      startMembership,
-      endMembership,
-    } = await req.json();
-
+    const { startMembership, endMembership, } = await req.json();
     await db.getConnection();
-
     if (isNaN(memberId)) {
       return Response.json(
         { message: "ID member tidak valid." },
@@ -151,30 +104,20 @@ export async function POST(req: Request, { params }: Props) {
       );
     }
 
-    // 3. CREATE MEMBERSHIP
-    await db.query(
-      `INSERT INTO membership (id_member, tgl_mulai, tgl_kedaluwarsa, created_at)
-      VALUES (?, ?, ?, ?)`,
-      [memberId, startMembership, endMembership, storeTime()]
+    await db.query(`
+      INSERT INTO membership (id_member, tgl_mulai, tgl_kedaluwarsa, created_at)
+      VALUES (?, ?, ?, ?)
+      `, [memberId, startMembership, endMembership, storeTime()]
     );
 
     return Response.json({
-      success: true,
-      message: "Membership Extended",
-      memberId,
-      username,
-      startMembership,
-      endMembership,
+      success: true, message: "Membership Extended",
+      memberId, username, startMembership, endMembership,
     });
-
   } catch (err: any) {
     console.error("MEMBERSHIP EXTENSION ERROR:", err);
-
     return Response.json(
-      {
-        message: "Server error",
-        error: err?.message || err,
-      },
+      { message: "Server error", error: err?.message || err, },
       { status: 500 }
     );
   }
@@ -185,23 +128,14 @@ export async function PATCH(req: Request, { params }: Props) {
 
   try {
     const session = await getSession();
-
-    if (!session) {
+    if (!session || session.role !== "admin") {
       return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    if (session.role !== "admin") {
-      return Response.json(
-        { message: "Forbidden" },
-        { status: 403 }
-      );
-    }
-
     const member: any = await getMember(username);
-
     if (!member.length) {
       return Response.json(
         { message: "Member tidak ditemukan." },
@@ -210,16 +144,8 @@ export async function PATCH(req: Request, { params }: Props) {
     }
 
     const memberId = member[0].id;
-
     const body = await req.json();
-
-    const {
-      name,
-      phone,
-      photoUrl,
-      photoId,
-    } = body;
-
+    const { name, phone, photoUrl, photoId, } = body;
     if (!name?.trim()) {
       return Response.json(
         { message: "Nama wajib diisi." },
@@ -227,43 +153,21 @@ export async function PATCH(req: Request, { params }: Props) {
       );
     }
 
-    await db.query(
-      `
-      UPDATE members
-      SET
-        nama = ?,
-        no_telp = ?,
-        foto_url = ?,
-        foto_id = ?,
-        updated_at = ?
+    await db.query(`
+      UPDATE members SET
+        nama = ?, no_telp = ?, foto_url = ?, foto_id = ?, updated_at = ?
       WHERE id = ?
-      `,
-      [
-        name.trim(),
-        phone || null,
-        photoUrl,
-        photoId,
-        storeTime(),
-        memberId,
-      ]
+      `, [name.trim(), phone || null, photoUrl, photoId, storeTime(), memberId,]
     );
+
     return Response.json({
-      success: true,
-      message: "Member Data Updated",
-      memberId,
-      name,
-      phone,
-      photoUrl,
-      photoId,
+      success: true, message: "Member Data Updated",
+      memberId, name, phone, photoUrl, photoId,
     });
   } catch (err: any) {
     console.error("EDIT MEMBER ERROR:", err);
-
     return Response.json(
-      {
-        message: "Server error",
-        error: err?.message || err,
-      },
+      { message: "Server error", error: err?.message || err, },
       { status: 500 }
     );
   }
@@ -275,23 +179,14 @@ export async function DELETE(req: Request, { params }: Props) {
 
   try {
     const session = await getSession();
-
-    if (!session) {
+    if (!session || session.role !== "admin") {
       return Response.json(
         { message: "Unauthorized" },
         { status: 401 }
       );
     }
 
-    if (session.role !== "admin") {
-      return Response.json(
-        { message: "Forbidden" },
-        { status: 403 }
-      );
-    }
-
     const member: any = await getMember(username);
-
     if (!member.length) {
       return Response.json(
         { message: "Member tidak ditemukan." },
@@ -299,44 +194,26 @@ export async function DELETE(req: Request, { params }: Props) {
       );
     }
 
-    await db.query(
-      `
-      DELETE FROM members
-      WHERE id = ?
-      `,
-      [member[0].id]
-    );
+    await db.query(` DELETE FROM members WHERE id = ? `, [member[0].id]);
 
     return Response.json({
-      success: true,
-      message: "Member Deleted",
-      memberId: member[0].id,
-      photoId: member[0].foto_id
+      success: true, message: "Member Deleted",
+      memberId: member[0].id, photoId: member[0].foto_id
     });
   } catch (err: any) {
     console.error("DELETE MEMBER ERROR:", err);
-
     return Response.json(
-      {
-        message: "Server error",
-        error: err?.message || err,
-      },
+      { message: "Server error", error: err?.message || err, },
       { status: 500 }
     );
   }
 }
 
 export async function getMember(username: string) {
-  const [rows] = await db.query(
-    `
-      SELECT
-        m.id,
-        m.foto_id
-      FROM users u
-      JOIN members m
-        ON m.id = u.id_member
-      WHERE u.username = ?
-      LIMIT 1
+  const [rows] = await db.query(`
+    SELECT m.id, m.foto_id FROM users u
+    JOIN members m ON m.id = u.id_member
+    WHERE u.username = ? LIMIT 1
     `,
     [username]
   );

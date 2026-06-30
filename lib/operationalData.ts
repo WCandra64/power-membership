@@ -18,9 +18,7 @@ import { localTime, storeDate, storeTime } from "./time";
 
 export async function getOperationalData(): Promise<any> {
   const now = localTime();
-
   const hour = now.getHours();
-
   let sesi: 0 | 1 | 2 = 0;
   let waktuAkhir = now;
 
@@ -41,60 +39,38 @@ export async function getOperationalData(): Promise<any> {
     waktuAkhir.setHours(7, 0, 0, 0);
   }
 
-  // Default operation
   let operasional = sesi !== 0;
-
   const jadwal = await getActiveJadwal();
+  if (jadwal) operasional = jadwal.status_operasional;
 
   const pengumumanRow = await getActiveAnnouncement();
   const pengumumanAktif = pengumumanRow?.pengumuman ?? "";
   const pengumumanHariIniRow = await getTodayAnnouncement();
   const pengumumanHariIni = pengumumanHariIniRow?.pengumuman ?? "";
-  
+
   const pengunjung = await getCurrentVisitors();
 
-  if (jadwal) {
-    operasional = jadwal.status_operasional;
-  }
-
-  return {
-    operasional,
-    sesi,
-    pengumumanAktif,
-    pengumumanHariIni,
-    jadwal,
-    pengunjung,
-    waktuAkhir,
-  };
+  return { operasional, sesi, pengumumanAktif, pengumumanHariIni, jadwal, pengunjung, waktuAkhir, };
 }
 
 async function getActiveJadwal() {
-  const [rows] = await db.execute(
-    `
-    SELECT *
-    FROM jadwal_manual
+  const [rows] = await db.execute(`
+    SELECT * FROM jadwal_manual
     WHERE ? BETWEEN waktu_mulai AND waktu_akhir
-    ORDER BY waktu_mulai DESC
-    LIMIT 1
-    `,
-    [storeTime()]
+    ORDER BY waktu_mulai DESC LIMIT 1
+    `, [storeTime()]
   );
 
   return (rows as any[])[0];
 }
 
 async function getTodayAnnouncement() {
-  const [todayRows] = await db.execute(
-    `
-    SELECT pengumuman
-    FROM jadwal_manual
+  const [todayRows] = await db.execute(`
+    SELECT pengumuman FROM jadwal_manual
     WHERE DATE(waktu_mulai) = ?
-    ORDER BY waktu_mulai ASC
-    LIMIT 1
-    `,
-    [storeDate()]
+    ORDER BY waktu_mulai ASC LIMIT 1
+    `, [storeDate()]
   );
-
   return (todayRows as any[])[0];
 }
 
@@ -102,39 +78,25 @@ async function getActiveAnnouncement() {
   function addDays(day: number) {
     const date = localTime();
     date.setDate(date.getDate() + day);
-
     return date;
   }
-
-  const [tomorrowRows] = await db.execute(
-    `
-    SELECT pengumuman
-    FROM jadwal_manual
+  const [tomorrowRows] = await db.execute(`
+    SELECT pengumuman FROM jadwal_manual
     WHERE DATE(waktu_mulai) IN (?, ?, ?)
-    AND pengumuman IS NOT NULL
-    AND pengumuman <> ''
-    ORDER BY waktu_mulai ASC
-    LIMIT 1
-    `,
-    [storeDate(), storeDate(addDays(1)), storeDate(addDays(2))]
+      AND pengumuman IS NOT NULL AND pengumuman <> ''
+    ORDER BY waktu_mulai ASC LIMIT 1
+    `, [storeDate(), storeDate(addDays(1)), storeDate(addDays(2))]
   );
-
   return (tomorrowRows as any[])[0];
 }
 
 async function getCurrentVisitors() {
-  const [rows] = await db.execute(
-    `
-    SELECT COUNT(*) AS total
-    FROM visits
+  const [rows] = await db.execute(`
+    SELECT COUNT(*) AS total FROM visits
     WHERE ? BETWEEN waktu_mulai AND waktu_akhir
-    `,
-    [storeTime()]
+    `, [storeTime()]
   );
-
-  const total = (rows as { total: number }[])[0].total;
-
-  return total;
+  return (rows as { total: number }[])[0].total;
 }
 
 // let op = false;
