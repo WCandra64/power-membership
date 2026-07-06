@@ -6,7 +6,7 @@ type Props = {
   params: Promise<{ id: string }>;
 }
 
-export async function PATCH(req: Request,{ params }: Props) {
+export async function PATCH(req: Request, { params }: Props) {
   try {
     const session = await getSession();
     if (!session || session.role !== "admin") {
@@ -67,7 +67,7 @@ export async function PATCH(req: Request,{ params }: Props) {
   }
 }
 
-export async function DELETE({ params }: Props) {
+export async function DELETE(req: Request, { params }: Props) {
   try {
     const session = await getSession();
     if (!session || session.role !== "admin") {
