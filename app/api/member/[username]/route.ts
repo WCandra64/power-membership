@@ -5,7 +5,7 @@ type Props = {
   params: Promise<{ username: string }>;
 }
 
-export async function GET({ params }: { params: Promise<{ username: string }>; }) {
+export async function GET(req: Request, { params }: { params: Promise<{ username: string }>; }) {
   const { username } = await params;
 
   try {
