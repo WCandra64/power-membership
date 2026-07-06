@@ -24,10 +24,22 @@ type Member = {
   showImage: boolean
 }
 
+type Pagination = {
+  page: number,
+  limit: number,
+  total: number,
+  totalPages: number,
+}
 
 export default function AdminPage() {
 
   const [members, setMembers] = useState<Member[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 1
+  })
   // const [loading, setLoading] = useState(true);
   const [opLoading, setOpLoading] = useState(true);
   const [memberLoading, setMemberLoading] = useState(true);
@@ -162,7 +174,7 @@ export default function AdminPage() {
   async function fetchMembers() {
     setMemberLoading(true);
     try {
-      const res = await fetch(`/api/admin/members?page=${page}&limit=30&search=${search}&filter=${activeCategory}&sort=${sort}`, {
+      const res = await fetch(`/api/admin/members?page=${page}&limit=20&search=${search}&filter=${activeCategory}&sort=${sort}`, {
         credentials: "include",
       });
 
@@ -175,6 +187,8 @@ export default function AdminPage() {
           showImage: false,
         }))
       );
+
+      setPagination(json.pagination)
     } finally {
       setMemberLoading(false);
     }
@@ -418,6 +432,22 @@ export default function AdminPage() {
             ))
           }
           
+          <div className={`${loading ? "hidden" : ""} flex w-full gap-2 items-center justify-center`}>
+            <button onClick={() => {if (page > 1) setPage(page - 1)}}>{`<`}</button>
+            <input
+              type="text"
+              value={page}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                if (val < pagination.totalPages && val > 0)
+                  setPage(val);
+              }}
+              className="border border-stroke p-2 rounded-sm w-fit"
+            />
+            <span className="text-stroke/60">of {pagination.totalPages}</span>
+            <button onClick={() => {if (page <= pagination.totalPages) setPage(page + 1)}}>{`>`}</button>
+          </div>
+
         </div>
       </div>
 
