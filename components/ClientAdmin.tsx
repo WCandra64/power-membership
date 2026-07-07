@@ -432,7 +432,7 @@ export default function AdminPage() {
             ))
           }
           
-          <div className={`${loading ? "hidden" : ""} flex w-full gap-2 items-center justify-center pt-4`}>
+          <div className={`${loading && !members.length ? "hidden" : ""} flex w-full gap-2 items-center justify-center pt-4`}>
             <button onClick={() => {if (page > 1) setPage(page - 1)}} className="cursor-pointer mr-4 p-2 bg-prime rounded-sm text-background hover:bg-stroke"><FontAwesomeIcon icon={faChevronLeft} size="sm" /></button>
             <input
               type="text"
