@@ -445,7 +445,7 @@ export default function AdminPage() {
               }}
               className="border-2 border-prime p-2 rounded-sm w-10 text-center text-sm placeholder:text-stroke bg-background"
             />
-            <span className="text-stroke/60">dari {pagination.totalPages}</span>
+            <span className="text-stroke/60">dari {pagination.totalPages} hlm</span>
             <button onClick={() => {if (page < pagination.totalPages) setPage(page + 1)}} className="cursor-pointer ml-4 p-2 bg-prime rounded-sm text-background hover:bg-stroke"><FontAwesomeIcon icon={faChevronRight} size="sm" /></button>
           </div>
 
