@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendarAlt, faCheck, faCheckCircle, faPlus, faSearch, faStreetView, faUserAltSlash, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarAlt, faCheck, faCheckCircle, faChevronLeft, faChevronRight, faPlus, faSearch, faStreetView, faUserAltSlash, faUsers } from "@fortawesome/free-solid-svg-icons";
 import ScrollTop from "@/components/ScrollTop";
 import timePassed from "@/lib/timePassed";
 
@@ -432,20 +432,21 @@ export default function AdminPage() {
             ))
           }
           
-          <div className={`${loading ? "hidden" : ""} flex w-full gap-2 items-center justify-center`}>
-            <button onClick={() => {if (page > 1) setPage(page - 1)}}>{`<`}</button>
+          <div className={`${loading ? "hidden" : ""} flex w-full gap-2 items-center justify-center pt-4`}>
+            <button onClick={() => {if (page > 1) setPage(page - 1)}} className="cursor-pointer mr-4 p-2 bg-prime rounded-sm text-background hover:bg-stroke"><FontAwesomeIcon icon={faChevronLeft} size="sm" /></button>
             <input
               type="text"
-              value={page}
+              placeholder={page.toString()}
               onChange={(e) => {
                 const val = Number(e.target.value);
-                if (val < pagination.totalPages && val > 0)
+                if (val <= pagination.totalPages && val > 0)
                   setPage(val);
+                e.target.value = "";
               }}
-              className="border border-stroke p-2 rounded-sm w-fit"
+              className="border-2 border-prime p-2 rounded-sm w-10 text-center text-sm placeholder:text-stroke bg-background"
             />
-            <span className="text-stroke/60">of {pagination.totalPages}</span>
-            <button onClick={() => {if (page <= pagination.totalPages) setPage(page + 1)}}>{`>`}</button>
+            <span className="text-stroke/60">dari {pagination.totalPages}</span>
+            <button onClick={() => {if (page < pagination.totalPages) setPage(page + 1)}} className="cursor-pointer ml-4 p-2 bg-prime rounded-sm text-background hover:bg-stroke"><FontAwesomeIcon icon={faChevronRight} size="sm" /></button>
           </div>
 
         </div>
