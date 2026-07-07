@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const updateStatusQuery = `
       UPDATE jadwal_manual SET
         waktu_mulai = ?, waktu_akhir = ?, status_operasional = ?, pengumuman = ?, updated_at = ?
-      WHERE id = ${jadwal.id} `;
+      WHERE id = ${jadwal?.id} `;
     const insertJadwalQuery = `
       INSERT INTO jadwal_manual (waktu_mulai, waktu_akhir, status_operasional, pengumuman, created_at)
       VALUES (?, ?, ?, ?, ?) `;
