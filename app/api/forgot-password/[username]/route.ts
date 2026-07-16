@@ -89,7 +89,7 @@ export async function POST(req: Request, { params } : Props) {
 
     if (dbDate !== registrationDate ||dbTime !== registrationTime) {
       return Response.json(
-        { success: false, message: "Tanggal atau waktu registrasi tidak sesuai." },
+        { success: false, message: "Tanggal atau waktu registrasi tidak sesuai.", registrationDate, registrationTime },
         { status: 400 }
       );
     }
