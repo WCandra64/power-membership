@@ -332,7 +332,7 @@ export default function LoginPage() {
 
           {showToast && (
             <div className={`fixed top-16 left-1/2 -translate-x-1/2 ${successfulChange? "bg-green-600" : "bg-rose-900"} text-white px-6 py-4 rounded-md shadow-xl text-background text-center z-50`}>
-              {successfulChange? "Password berhasil diganti." : state?.error}
+              {successfulChange? "Password berhasil diperbarui." : state?.error}
               {/* {state?.error ? state.error : (errors.username || errors.password) ? "Username dan password harus diisi!" : errors.validation} */}
               {/* {errors.username ? errors.username : errors.password ? errors.password : errors.validation} */}
             </div>
