@@ -78,7 +78,7 @@ export async function POST(req: Request, { params } : Props) {
       );
     }
 
-    const createdAt = new Date(users[0].created_at);
+    const createdAt = users[0].created_at;
 
     // Date comparison
     const dbDate = storeDate(createdAt);
