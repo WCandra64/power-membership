@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { storeDate, storeTime } from "@/lib/time";
+import { localTime, storeDate, storeTime } from "@/lib/time";
 import bcrypt from "bcrypt";
 
 type Props = {
@@ -78,7 +78,7 @@ export async function POST(req: Request, { params } : Props) {
       );
     }
 
-    const createdAt = users[0].created_at;
+    const createdAt = localTime(users[0].created_at);
 
     // Date comparison
     const dbDate = storeDate(createdAt);

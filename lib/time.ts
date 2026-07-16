@@ -1,6 +1,5 @@
-export function localTime() {
-  const now = new Date();
-  return new Date(now.getTime() + 7 * 60 * 60 * 1000);
+export function localTime(time = new Date()) {
+  return new Date(time.getTime() + 7 * 60 * 60 * 1000);
 }
 
 export function storeTime(time = localTime()) {
