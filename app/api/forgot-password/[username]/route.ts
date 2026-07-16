@@ -87,9 +87,9 @@ export async function POST(req: Request, { params } : Props) {
     const dbTime =
       `${String(createdAt.getHours()).padStart(2, "0")}:${String(createdAt.getMinutes()).padStart(2, "0")}`;
 
-    if (dbDate !== registrationDate ||dbTime !== registrationTime) {
+    if (dbDate !== registrationDate || dbTime !== registrationTime) {
       return Response.json(
-        { success: false, message: "Tanggal atau waktu registrasi tidak sesuai.", registrationDate, registrationTime },
+        { success: false, message: "Tanggal atau waktu registrasi tidak sesuai.", registrationDate, registrationTime, dbDate, dbTime },
         { status: 400 }
       );
     }
