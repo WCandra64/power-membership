@@ -244,7 +244,7 @@ export default function LoginPage() {
     <main className="w-full h-[calc(100dvh-theme(spacing.12))] px-6 pb-4">
       {pending?
         <div className="flex flex-col gap-2 h-full justify-center items-center">
-          <img src="/power.png" className="w-54 animate-pulse" />
+          <img src="/power.svg" className="w-54 animate-pulse" />
           <h1 className="text-2xl font-black">Loading...</h1>
         </div>
         :

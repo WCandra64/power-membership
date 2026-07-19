@@ -3,12 +3,13 @@
 import PrimaryButton from "@/components/PrimaryButton";
 import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faSignOutAlt, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faList, faSignOutAlt, faTrash, faX } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState } from "react";
 import { localTime } from "@/lib/time";
 import timePassed from "@/lib/timePassed";
 import { destroyImage, uploadImage } from "@/lib/imageOperations";
 import { redirect, useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function AdminMemberPage({ username }: { username: string }) {
 
@@ -136,40 +137,37 @@ export default function AdminMemberPage({ username }: { username: string }) {
     } 
   }
 
-  async function deleteMember() {
-    try {
-      setRemove(false);
-      setLoading(true);
+async function deleteMember() {
+  try {
+    setRemove(false);
+    setLoading(true);
 
-      const res = await fetch(
-        `/api/admin/member/${username}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
+    const res = await fetch(
+      `/api/admin/member/${username}`,
+      { method: "DELETE", credentials: "include", }
+    );
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!res.ok) {
-        setLoading(false);
-        throw new Error(data.message);
-      }
-
-      if (data.photoId) {
-        try {
-          await destroyImage(data.photoId);
-        } catch (err) {
-          console.error("Photo deletion failed:", err);
-        }
-      }
-      
-      router.push("/admin");
-    } catch (err) {
-      console.error(err);
+    if (!res.ok) {
       setLoading(false);
+      throw new Error(data.message);
     }
+
+    if (data.photoId) {
+      try {
+        await destroyImage(data.photoId);
+      } catch (err) {
+        console.error("Photo deletion failed:", err);
+      }
+    }
+    
+    router.push("/admin");
+  } catch (err) {
+    console.error(err);
+    setLoading(false);
   }
+}
 
   async function fetchData() {
     const res = await fetch(`/api/admin/member/${username}`, {
@@ -263,7 +261,10 @@ export default function AdminMemberPage({ username }: { username: string }) {
           </div>
 
           <div className="w-full flex flex-col gap-2 items-center">
-            <span className="w-full text-xs text-start pt-1">Latihan terakhir {timePassed(member.lastCheckin)}</span>
+            <Link href={`/admin/member/${username}/visit`} className="flex w-full items-center justify-center gap-2 pt-1 text-prime hover:text-stroke cursor-pointer">
+              <FontAwesomeIcon icon={faList} className="w-16" />
+              <span className="w-full text-xs text-start">Latihan terakhir {timePassed(member.lastCheckin)}</span>
+            </Link>
 
             <div
               className={`w-full text-center py-2 border-2
@@ -276,12 +277,17 @@ export default function AdminMemberPage({ username }: { username: string }) {
             >
               {member.msStatus ? "AKTIF" : "TIDAK AKTIF"}
             </div>
-            <div className="text-xs font-extralight tracking-widest">{formatDate(member.msStart)} - {formatDate(member.msEnd)}</div>
+            <Link href={`/admin/member/${username}/membership`} className="flex w-full items-center justify-center gap-2 justify-center text-prime hover:text-stroke cursor-pointer">
+              <FontAwesomeIcon icon={faList} className="w-16" />
+              <span className="text-xs font-extralight tracking-widest">
+                {formatDate(member.msStart)} - {formatDate(member.msEnd)}
+              </span>
+            </Link>
           </div>
 
         </div>
 
-        <div className="text-xs font-extralight tracking-widest"><span className="font-light tracking-normal">Waktu daftar:</span> {formatDate(member.created_at, "full")}</div>
+        <div className="text-xs font-extralight tracking-widest py-2"><span className="font-light tracking-normal">Waktu daftar:</span> {formatDate(member.created_at, "full")}</div>
 
         <div className="flex flex-col gap-4 w-full">
           <PrimaryButton disabled={member.msStatus} onClick={() => setMembershipExtend(true)}>Perpanjang Membership</PrimaryButton>

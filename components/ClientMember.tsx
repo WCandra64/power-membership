@@ -3,47 +3,76 @@
 import PrimaryButton from "@/components/PrimaryButton";
 import BareButton from "@/components/BareButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCertificate, faSignOutAlt, faStreetView } from "@fortawesome/free-solid-svg-icons";
 import { logout } from "@/app/actions/logout";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { localTime } from "@/lib/time";
+import Link from "next/link";
 
 export default function MemberPage({ username }: { username: string }) {
 
   const [loading, setLoading] = useState(true);
   const [member, setMember] = useState<any>({});
 
-  const [isTraining, setIsTraining] = useState(false);
+  const now = Date.now();
+  const isTraining = 
+    member.lastCheckin &&
+    member.lastCheckout &&
+    now >= new Date(member.lastCheckin).getTime() &&
+    now <= new Date(member.lastCheckout).getTime();
 
   const [opData, setOpData] = useState<any>({}); 
   const [checkinLoading, setCheckinLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
-  async function handleCheckin() {
-    try {
-      setCheckinLoading(true);
+  // const loading = opLoading || memberLoading || checkinLoading;
 
-      const res = isTraining ? await fetch("/api/checkout", {
-        method: "PATCH",
-        credentials: "include",
-      }) : await fetch("/api/checkin", {
-        method: "POST",
-        credentials: "include",
-      })
+  function toast(message: string) {
+    setToastMessage(message);
+    setShowToast(true);
 
-      await res.json();
-
-      if (res.ok) {
-        window.location.reload();
-      }
-    } finally {
-      setLoading(true);
-      setCheckinLoading(false);
-    }
+    const timer = setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
   }
 
-  // LOAD MEMBERS
-  useEffect(() => {
-    async function fetchData() {
+  async function handleCheckin() {
+    setCheckinLoading(true);
+
+    // Save what action we're performing BEFORE it changes
+    const action = isTraining ? "checkout" : "checkin";
+
+    const res = await (
+      action === "checkout"
+        ? fetch("/api/checkout", {
+            method: "PATCH",
+            credentials: "include",
+          })
+        : fetch("/api/checkin", {
+            method: "POST",
+            credentials: "include",
+          })
+    );
+
+    await res.json();
+
+    if (res.ok) {
+      await fetchData();
+
+      toast(action === "checkin"
+        ? "Sesi latihan berhasil dimulai."
+        : "Sesi latihan berhasil diakhiri."
+      );
+    }
+
+    setCheckinLoading(false);
+  }
+
+  async function fetchData() {
+    try {
       const [memberRes, opRes] = await Promise.all([
         fetch(`/api/member/${username}`, {
           credentials: "include",
@@ -57,32 +86,24 @@ export default function MemberPage({ username }: { username: string }) {
 
       setMember(memberJson.data[0]);
       setOpData(opJson);
-
+    } finally {
       setLoading(false);
     }
+  }
 
+  // LOAD MEMBERS
+  useEffect(() => {
     fetchData();
   }, []);
 
   // LOAD MEMBERS
-  useEffect(() => {
-    if (!loading) {
-      const now = Date.now();
-
-      setIsTraining(
-        member.lastCheckin &&
-        member.lastCheckout &&
-        now >= new Date(member.lastCheckin).getTime() &&
-        now <= new Date(member.lastCheckout).getTime()
-      );
-      // console.log("now ", now, "checkin", new Date(member.lastCheckin).getTime(), "checkout", new Date(member.lastCheckout).getTime())
-      console.log("checkin", member.lastCheckin, "checkout", member.lastCheckout)
-    }
-  }, [member]);
+  // useEffect(() => {
+  //   setTraining();
+  // }, [member]);
 
   return (
     <div className="h-[calc(100dvh-theme(spacing.12))] flex flex-col gap-8 py-4 px-6 justify-end items-center">
-      {loading?
+      { loading ?
         <>
           <div className="w-full flex flex-col gap-4 items-center animate-pulse">
 
@@ -134,9 +155,28 @@ export default function MemberPage({ username }: { username: string }) {
             </div>
 
           </div>
+          
+          {/* <div className="flex flex-col gap-2 items-center w-full">
+            <span className="text-xs font-extralight tracking-widest">RIWAYAT</span>
+            <div className="flex gap-2 w-full">
+              <Link href={`/member/${member.username}/membership`} className="w-full">
+                <BareButton>
+                  <FontAwesomeIcon icon={faCertificate} className="w-4" />
+                  Membership
+                </BareButton>
+              </Link>
+              
+              <Link href={`/member/${member.username}/visit`} className="w-full">
+                <BareButton>
+                  <FontAwesomeIcon icon={faStreetView} className="w-4" />
+                  Visit
+                </BareButton>
+              </Link>
+            </div>
+          </div> */}
 
           <div className="flex flex-col gap-4 w-full">
-            <PrimaryButton onClick={handleCheckin} disabled={!opData.operasional || !member.msStatus || checkinLoading}>{checkinLoading? "Loading..." : isTraining ? "Check Out" : "Check In"}</PrimaryButton>
+            <PrimaryButton onClick={handleCheckin} disabled={!opData.operasional || !member.msStatus || checkinLoading}>{checkinLoading ? "Loading..." : isTraining ? "Check Out" : "Check In"}</PrimaryButton>
             <BareButton onClick={() => {setLoading(true); logout();}}>
               <FontAwesomeIcon icon={faSignOutAlt} className="w-4" />
               Log Out
@@ -144,6 +184,11 @@ export default function MemberPage({ username }: { username: string }) {
           </div>
         </>
       }
+      { showToast && (
+        <div className={`fixed top-16 left-1/2 -translate-x-1/2 bg-green-600 text-white px-6 py-4 rounded-md shadow-xl text-background text-center z-50`}>
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 };

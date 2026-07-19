@@ -7,22 +7,20 @@ type Props = {
   params: Promise<{ username: string }>;
 }
 
-export default async function MemberServer({ params }: Props) {
-  const { username } = await params;
-
+export default async function MemberServer() {
   const session = await getSession();
 
   if (!session) {
     redirect("/login");
   }
 
-  if (username !== session.username) {
-    redirect("/member/"+session.username);
-  }
+  // if (username !== session.username) {
+  //   redirect("/member/"+session.username);
+  // }
 
-  console.log("username: "+username);
+  console.log("username: "+session.username);
 
   return (
-    <MemberPage username={username}  />
+    <MemberPage username={session.username as string}  />
   );
 };

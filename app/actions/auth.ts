@@ -33,5 +33,5 @@ export async function loginAction(prevState: any, formData: FormData) {
   });
 
   if (user.role === "admin") redirect("/admin");
-  else redirect("/member/"+username);
+  else redirect("/member");
 }

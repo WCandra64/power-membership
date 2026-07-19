@@ -247,60 +247,6 @@ export default function AdminPage() {
   return (
     <main className="relative flex flex-col gap-6 w-full min-h-[calc(100dvh-theme(spacing.12))] bg-foreground py-6">
 
-      <div className="flex flex-col gap-4 px-6">
-        <div className="flex justify-between">
-          {/* OPEN BUTTON */}
-          <button
-            onClick={() => changeOpData(1)}
-            disabled={loading}
-            className={`relative w-36 h-10 rounded-full inset-shadow-sm/20 cursor-pointer transition ${
-              opData.operasional ? "bg-green-500" : "bg-paragraph/10"
-            }`}
-          >
-            <span className="font-mulish font-black text-background">{loading? "" :opData.operasional ? "BUKA" : "TUTUP"}</span>
-            <div
-              className={`absolute top-0.5 h-9 w-9 rounded-full bg-background shadow-sm/20 transition-transform duration-200 ${
-                loading ? "hidden" :
-                opData.operasional ? "translate-x-26.5" : "translate-x-0.5"
-              }`}
-            />
-          </button>
-          
-          {/* SCHED BUTTON */}
-          <Link href="/admin/jadwal" className="flex gap-2 items-center py-2 px-6 bg-background text-prime font-bold text-sm rounded-sm shadow-sm/20 hover:shadow-none hover:text-stroke">
-            <FontAwesomeIcon icon={faCalendarAlt} />
-            Tambah Jadwal
-          </Link>
-        </div>
-        
-        {/* PENGUMUMAN FIELD */}
-        <div className="flex gap-2">
-          <input
-            type="text"
-            name="pengumuman"
-            placeholder="Pengumuman..."
-            value={pengumuman || ""}
-            onChange={(e) => setPengumuman(e.target.value)}
-            className={`
-              w-full rounded-sm px-4 py-2 text-sm
-              border-1 border-stroke/40 focus:outline-2 outline-stroke
-              ${pengumuman ? "outline-2 bg-background" : "bg-paragraph/5"}
-            `}
-          />
-
-          <button
-            type="button"
-            disabled={loading || (pengumuman === opData.pengumumanHariIni || (pengumuman === "" && opData.pengumumanHariIni === ""))}
-            onClick={() => changeOpData(2)}
-            className="bg-green-500 px-2 text-background shadow-sm/40 rounded-sm cursor-pointer hover:bg-stroke disabled:bg-paragraph/10 disabled:text-paragraph/20 disabled:shadow-none"
-          >
-            <FontAwesomeIcon icon={faCheck} />
-          </button>
-        </div>
-      </div>
-
-      <hr />
-
       {/* MEMBER CATEGORies */}
       <div className="flex gap-2 w-full overflow-x-auto scrollbar-hidden pb-2 px-6">
         {categories.map((c, i) => (

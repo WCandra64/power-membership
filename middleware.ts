@@ -43,7 +43,7 @@ export async function middleware(req: NextRequest) {
 
       if (session.role === "member") {
         return NextResponse.redirect(
-          new URL(`/member/${session.username}`, req.url)
+          new URL(`/member`, req.url)
         );
       }
     }
@@ -54,7 +54,7 @@ export async function middleware(req: NextRequest) {
       session.role !== "admin"
     ) {
       return NextResponse.redirect(
-        new URL(`/member/${session.username}`, req.url)
+        new URL(`/member`, req.url)
       );
     }
 
@@ -66,24 +66,24 @@ export async function middleware(req: NextRequest) {
         );
       }
 
-      if (pathname === "/member") {
-        return NextResponse.redirect(
-          new URL(`/member/${session.username}`, req.url)
-        );
-      }
+      // if (pathname === "/member") {
+      //   return NextResponse.redirect(
+      //     new URL(`/member`, req.url)
+      //   );
+      // }
 
       // MEMBER PROFILE PROTECTION
-      const match = pathname.match(/^\/member\/([^/]+)/);
+      // const match = pathname.match(/^\/member\/([^/]+)/);
 
-      if (match) {
-        const username = match[1];
+      // if (match) {
+      //   const username = match[1];
 
-        if (username !== session.username) {
-          return NextResponse.redirect(
-            new URL(`/member/${session.username}`, req.url)
-          );
-        }
-      }
+      //   if (username !== session.username) {
+      //     return NextResponse.redirect(
+      //       new URL(`/member`, req.url)
+      //     );
+      //   }
+      // }
     }
 
   }

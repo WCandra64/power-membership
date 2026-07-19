@@ -1,0 +1,21 @@
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
+import MembershipHistory from "@/components/ClientMembership";
+
+type Props = {
+  params: Promise<{ username: string }>;
+}
+
+export default async function AdminMembershipHistoryServer({ params }: Props) {
+  const { username } = await params;
+
+  const session = await getSession();
+
+  if (!session || session.role !== "admin") {
+    redirect("/login");
+  }
+
+  return (
+    <MembershipHistory username={username}  />
+  );
+};
