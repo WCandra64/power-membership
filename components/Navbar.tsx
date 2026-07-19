@@ -58,7 +58,7 @@ export default function Navbar() {
 
       {/* LOGO */}
       <div className={`flex items-center h-full ${hideIcon && "mx-auto"}`}>
-        <Link href="/" className="h-full flex items-center py-2">
+        <Link href="/" onClick={() => setDrawerOpen(false)} className="h-full flex items-center py-2">
           <img
             src="/power_nav.png"
             alt="Power Gym"
