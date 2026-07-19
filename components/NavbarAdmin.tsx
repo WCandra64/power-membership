@@ -1,13 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendarAlt, faCheck, faCheckCircle, faChevronLeft, faChevronRight, faPlus, faRightFromBracket, faSearch, faStreetView, faUserAltSlash, faUsers } from "@fortawesome/free-solid-svg-icons";
-import ScrollTop from "@/components/ScrollTop";
-import timePassed from "@/lib/timePassed";
-import PrimaryButton from "./PrimaryButton";
-import BareButton from "./BareButton";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
 export default function NavbarAdmin() {
   const [opLoading, setOpLoading] = useState(true);
@@ -75,7 +70,7 @@ export default function NavbarAdmin() {
             onClick={() => changeOpData(1)}
             disabled={opLoading}
             className={`relative w-42 h-10 rounded-full inset-shadow-sm/20 cursor-pointer transition ${
-              opData.operasional ? "bg-green-500" : "bg-paragraph/10"
+              opData.operasional ? "bg-green-500" : "bg-paragraph/20"
             }`}
           >
             <span className="font-mulish font-black text-background">{opLoading? "" :opData.operasional ? "BUKA" : "TUTUP"}</span>

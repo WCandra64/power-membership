@@ -2,8 +2,7 @@
 
 // import { UserCircle2, Menu } from "react-icons/fa6";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleUser, faBars, faRightFromBracket, faCertificate, faStreetView, faRectangleList, faLandmark, faCalendarAlt } from '@fortawesome/free-solid-svg-icons'
-import Image from "next/image";
+import { faCircleUser, faBars, faRightFromBracket, faCertificate, faStreetView, faLandmark, faCalendarAlt } from '@fortawesome/free-solid-svg-icons'
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { logout } from '@/app/actions/logout';
