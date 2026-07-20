@@ -124,7 +124,7 @@ export default function Navbar() {
                 <hr />
 
                 { isAdmin ? (
-                  <BareButton>
+                  <BareButton onClick={() => {handleLogout; setDrawerOpen(false)}}>
                     <FontAwesomeIcon icon={faRightFromBracket} size='xl' className='w-6' />
                     Log Out
                   </BareButton>
