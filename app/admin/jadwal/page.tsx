@@ -231,7 +231,7 @@ export default function JadwalPage() {
                     >
                       <FontAwesomeIcon icon={faEdit}/>
                     </button>
-                    <button onClick={() => deleteJadwal(j.id)} className="text-prime hover:text-stroke cursor-pointer">
+                    <button onClick={() => deleteJadwal(j.id_jadwal)} className="text-prime hover:text-stroke cursor-pointer">
                       <FontAwesomeIcon icon={faTrash}/>
                     </button>
                   </td>
