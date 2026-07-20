@@ -47,7 +47,7 @@ export async function PATCH(req: Request, { params }: Props) {
       UPDATE jadwal_manual 
       SET 
         waktu_mulai = ?, waktu_akhir = ?, status_operasional = ?, pengumuman = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id_jadwal = ?
       `, [storeTime(start), storeTime(end), false, announcement, storeTime(), id]
     );
 
@@ -78,7 +78,7 @@ export async function DELETE(req: Request, { params }: Props) {
     }
     const { id } = await params;
     const [result] =
-      await db.query(`DELETE FROM jadwal_manual WHERE id = ? `, [id]);
+      await db.query(`DELETE FROM jadwal_manual WHERE id_jadwal = ? `, [id]);
 
     if ((result as any).affectedRows === 0) {
       return Response.json(

@@ -43,20 +43,20 @@ export async function getMember(username: string) {
       v.waktu_mulai AS lastCheckin, v.waktu_akhir AS lastCheckout
 
     FROM members m
-    LEFT JOIN users u ON u.id_member = m.id
+    LEFT JOIN users u ON u.id_member = m.id_member
     LEFT JOIN (
       SELECT * FROM membership
       WHERE (id_member, tgl_kedaluwarsa) IN (
         SELECT id_member, MAX(tgl_kedaluwarsa) FROM membership GROUP BY id_member
       )
-    ) ms ON ms.id_member = m.id
+    ) ms ON ms.id_member = m.id_member
 
     LEFT JOIN (
       SELECT * FROM visits
       WHERE (id_member, waktu_mulai) IN (
         SELECT id_member, MAX(waktu_mulai) FROM visits GROUP BY id_member
       )
-    ) v ON v.id_member = m.id
+    ) v ON v.id_member = m.id_member
 
     WHERE u.username = ? LIMIT 1
     `, [username]

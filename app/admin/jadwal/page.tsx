@@ -219,7 +219,7 @@ export default function JadwalPage() {
                     <button
                       onClick={() => {
                         setEdit(true);
-                        setIdJadwal(j.id);
+                        setIdJadwal(j.id_jadwal);
                         setForm({
                           date: new Date(j.waktu_mulai).toISOString().split('T')[0],
                           sess1: new Date(j.waktu_mulai).getHours() < 11,

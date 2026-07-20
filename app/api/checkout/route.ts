@@ -14,7 +14,7 @@ export async function PATCH() {
 
     const now = storeTime();
     const [rows] = await db.execute(`
-      SELECT id FROM visits
+      SELECT id_visit FROM visits
       WHERE id_member = ? AND ? BETWEEN waktu_mulai AND waktu_akhir
       ORDER BY waktu_mulai DESC LIMIT 1
       `, [session.memberId as number, now]
@@ -29,7 +29,7 @@ export async function PATCH() {
 
     await db.execute(`
       UPDATE visits SET waktu_akhir = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id_visit = ?
       `, [now, now, active[0].id]
     );
     

@@ -142,7 +142,7 @@ export default function VisitHistory({ username, }: { username?: string; }) {
               const start = localTime(new Date(item.waktu_mulai));
               const end = localTime(new Date(item.waktu_akhir));
               return(
-                <div key={item.id} className="border rounded-sm p-4 flex flex-col gap-3" >
+                <div key={item.id_visit} className="border rounded-sm p-4 flex flex-col gap-3" >
 
                   <div className="flex justify-between">
                     <span className={`text-lg font-bold tracking-widest ${

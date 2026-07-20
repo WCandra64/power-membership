@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   }
 
   const token = await createToken(
-    user.id,
+    user.id_user,
     user.id_member,
     username,
     user.role

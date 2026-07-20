@@ -23,7 +23,7 @@ export async function POST() {
 
     const now = storeTime();
     const [rows] = await db.execute(`
-      SELECT id FROM visits
+      SELECT id_visit FROM visits
       WHERE id_member = ? AND ? BETWEEN waktu_mulai AND waktu_akhir
       LIMIT 1
       `, [session.memberId as number, now]

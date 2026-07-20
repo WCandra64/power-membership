@@ -29,21 +29,21 @@ export async function GET(req: Request, { params }: Props) {
         v.waktu_mulai AS lastCheckin, v.waktu_akhir AS lastCheckout
 
       FROM members m
-      LEFT JOIN users u ON u.id_member = m.id
+      LEFT JOIN users u ON u.id_member = m.id_member
       LEFT JOIN (
         SELECT * FROM membership
         WHERE (id_member, tgl_kedaluwarsa) IN (
           SELECT id_member, MAX(tgl_kedaluwarsa) FROM membership
           GROUP BY id_member
         )
-      ) ms ON ms.id_member = m.id
+      ) ms ON ms.id_member = m.id_member
       LEFT JOIN (
         SELECT * FROM visits
         WHERE (id_member, waktu_mulai) IN (
           SELECT id_member, MAX(waktu_mulai) FROM visits
           GROUP BY id_member
         )
-      ) v ON v.id_member = m.id
+      ) v ON v.id_member = m.id_member
 
       WHERE u.username = ? LIMIT 1
       `, [username]
@@ -87,7 +87,7 @@ export async function POST(req: Request, { params }: Props) {
       );
     }
 
-    const memberId = member[0].id;
+    const memberId = member[0].id_member;
     const { startMembership, endMembership, } = await req.json();
     await db.getConnection();
     if (isNaN(memberId)) {
@@ -143,7 +143,7 @@ export async function PATCH(req: Request, { params }: Props) {
       );
     }
 
-    const memberId = member[0].id;
+    const memberId = member[0].id_member;
     const body = await req.json();
     const { name, phone, photoUrl, photoId, } = body;
     if (!name?.trim()) {
@@ -156,7 +156,7 @@ export async function PATCH(req: Request, { params }: Props) {
     await db.query(`
       UPDATE members SET
         nama = ?, no_telp = ?, foto_url = ?, foto_id = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id_member = ?
       `, [name.trim(), phone || null, photoUrl, photoId, storeTime(), memberId,]
     );
 
@@ -194,11 +194,11 @@ export async function DELETE(req: Request, { params }: Props) {
       );
     }
 
-    await db.query(` DELETE FROM members WHERE id = ? `, [member[0].id]);
+    await db.query(` DELETE FROM members WHERE id_member = ? `, [member[0].id_member]);
 
     return Response.json({
       success: true, message: "Member Deleted",
-      memberId: member[0].id, photoId: member[0].foto_id
+      memberId: member[0].id_member, photoId: member[0].foto_id
     });
   } catch (err: any) {
     console.error("DELETE MEMBER ERROR:", err);
@@ -211,8 +211,8 @@ export async function DELETE(req: Request, { params }: Props) {
 
 export async function getMember(username: string) {
   const [rows] = await db.query(`
-    SELECT m.id, m.foto_id FROM users u
-    JOIN members m ON m.id = u.id_member
+    SELECT m.id_member, m.foto_id FROM users u
+    JOIN members m ON m.id_member = u.id_member
     WHERE u.username = ? LIMIT 1
     `,
     [username]

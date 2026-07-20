@@ -92,7 +92,7 @@ export async function getVisitHistory(username: string, page = 1, limit = 10) {
   const [name] = await db.query(`
     SELECT m.nama
     FROM members m
-    JOIN users u ON u.id_member = m.id
+    JOIN users u ON u.id_member = m.id_member
     WHERE u.username = ?;
     `, [username]
   );

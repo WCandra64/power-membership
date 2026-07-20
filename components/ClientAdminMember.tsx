@@ -112,8 +112,8 @@ export default function AdminMemberPage({ username }: { username: string }) {
 
       if (
         formEdit.photoFile &&
-        member.id &&
-        member.id !== photoId
+        member.id_member &&
+        member.id_member !== photoId
       ) {
         try {
           await destroyImage(member.foto_id);

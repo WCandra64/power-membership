@@ -120,7 +120,7 @@ export default function MembershipHistory({ username, }: { username?: string; })
                     Date.now() <= end.getTime();
 
                   return (
-                    <div key={item.id} className="border rounded-sm p-4 flex flex-col gap-3">
+                    <div key={item.id_membership} className="border rounded-sm p-4 flex flex-col gap-3">
 
                       <div className="flex justify-between">
                         <span className={`text-lg font-bold tracking-widest ${active ? "text-green-500" : "text-paragraph/40"}`}>

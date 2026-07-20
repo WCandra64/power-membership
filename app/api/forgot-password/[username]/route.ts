@@ -126,7 +126,7 @@ export async function PATCH(req: Request, { params }: Props) {
     // }
 
     const [rows] = await db.query(`
-      SELECT id FROM users
+      SELECT id_user FROM users
       WHERE username = ? AND role = 'member'
       LIMIT 1
       `, [username]
@@ -146,7 +146,7 @@ export async function PATCH(req: Request, { params }: Props) {
     await db.query(`
       UPDATE users
       SET password = ?, updated_at = ?
-      WHERE id = ?
+      WHERE id_user = ?
       `, [hashedPassword, storeTime(), users[0].id]
     );
 

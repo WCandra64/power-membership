@@ -50,7 +50,7 @@ export async function getMembershipHistory(username: string, page = 1, limit = 1
   const offset = (page - 1) * limit;
 
   const [rows] = await db.query(`
-    SELECT ms.id, ms.tgl_mulai, ms.tgl_kedaluwarsa, ms.created_at 
+    SELECT ms.* 
     FROM membership ms
     JOIN users u ON u.id_member = ms.id_member
     WHERE u.username = ?
@@ -70,7 +70,7 @@ export async function getMembershipHistory(username: string, page = 1, limit = 1
   const [name] = await db.query(`
     SELECT m.nama
     FROM members m
-    JOIN users u ON u.id_member = m.id
+    JOIN users u ON u.id_member = m.id_member
     WHERE u.username = ?;
     `, [username]
   );
