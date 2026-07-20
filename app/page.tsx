@@ -12,6 +12,59 @@ export default async function Home() {
   const opData = await getOperationalData();
   console.log(opData);
 
+  const fasilitas = [
+    {
+      name: "Tempat Penyimpanan",
+      desc: "Untuk menyimpan barang bawaan",
+      img: "/storage.jpg"
+    },
+    {
+      name: "Free Air Minum",
+      desc: "Gratis air minum selama latihan, bisa refill botol ataupun menggunakan gelas yang disediakan",
+      img: "/water.jpg"
+    },
+    {
+      name: "Zona Wanita",
+      desc: "Zona yang disediakan khusus untuk wanita",
+      img: "/women.jpg"
+    },
+    {
+      name: "Dumbell",
+      desc: "Dua set dumbell dari berat 2kg sampai dengan 20kg",
+      img: "/dbell.jpg"
+    },
+    {
+      name: "Smith Machine",
+      desc: "Disediakan 2 smith machine yang dapat digunakan untuk bench press ataupun squat",
+      img: "/smith.jpg"
+    },
+    {
+      name: "Bench Press",
+      desc: "Alat yang bisa digunakan untuk melakukan bench press",
+      img: "/bpress.jpg"
+    },
+    {
+      name: "Chest Press",
+      desc: "3 alat variasi chest press, dari normal, incline, dan decline",
+      img: "/chest.jpg"
+    },
+    {
+      name: "Hack Squat",
+      desc: "Alat yang dapat digunakan untuk latihan squat lebih mudah",
+      img: "/hack.jpg"
+    },
+    {
+      name: "Leg Press",
+      desc: "Alat leg press yang bisa digunakan untuk melatih kaki",
+      img: "/lpress.jpg"
+    },
+    {
+      name: "Speaker",
+      desc: "Speaker Bluetooth yang dapat digunakan oleh member untuk mengatur suasana latihan",
+      img: "/speaker.jpg"
+    },
+  ]
+
   return (
     <main className="h-[calc(100dvh-theme(spacing.12))] overflow-y-scroll snap-y snap-mandatory scroll-smooth custom-scrollbar">
 
@@ -43,7 +96,7 @@ export default async function Home() {
           <div className="h-[46vh] w-full relative" >
             {/* HERO IMG */}
             <img
-              src="/hero.png"
+              src="/hero.jpg"
               alt="Gym murah dan lengkap di yogyakarta"
               className="
                 w-full h-full object-cover
@@ -55,7 +108,7 @@ export default async function Home() {
             {/* <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white via-transparent to-white" /> */}
 
             {/* PRICE */}
-            <Link href="https://wa.me/6282220348804" className="absolute right-2 bottom-2 flex h-fit items-end gap-1 px-4 py-2 -mt-20 bg-prime text-background rounded-sm border-2 border-stroke shadow-sm/40 font-chivo italic hover:bg-stroke">
+            <Link href="https://wa.me/628135935187" className="absolute right-2 bottom-2 flex h-fit items-end gap-1 px-4 py-2 -mt-20 bg-prime text-background rounded-sm border-2 border-stroke shadow-sm/40 font-chivo italic hover:bg-stroke">
               <div className="font-bold text-xs">
                 {`Rp `}
               </div>
@@ -142,12 +195,12 @@ export default async function Home() {
         </div>
 
         <div className="flex w-full gap-2 px-6 overflow-x-auto scrollbar-hidden scroll-smooth">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {fasilitas.map((m, i) => (
             <div key={i} className="flex-none relative w-full h-[56vh] bg-slate-400 rounded-xs border-2 border-stroke select-none">
-              <img src="/hero.png" alt="" className="w-full h-full object-cover" />
+              <img src={m.img} alt="" className="w-full h-full object-cover" />
               <div className="absolute flex flex-col gap-1 bottom-0 bg-stroke/80 w-full px-4 py-2">
-                <h4 className="font-extrabold text-prime">Lorem Ipsum</h4>
-                <p className="text-xs text-background font-light">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <h4 className="font-extrabold text-prime">{m.name}</h4>
+                <p className="text-xs text-background font-light">{m.desc}</p>
               </div>
             </div>
             
@@ -186,7 +239,7 @@ export default async function Home() {
               </div>
             </div>
 
-            <Link href="https://wa.me/6282220348804"><PrimaryButton>Daftar Sekarang</PrimaryButton></Link>
+            <Link href="https://wa.me/628135935187"><PrimaryButton>Daftar Sekarang</PrimaryButton></Link>
           </div>
 
           <div className="w-full flex gap-2">
@@ -258,11 +311,11 @@ export default async function Home() {
             </div>
             <div className="flex gap-2 w-full justify-start items-center">
               <FontAwesomeIcon icon={faClock} className="text-prime" />
-              <span>Pukul 07.00 - 12.00 dan 15.00 - 21.00</span>
+              <span>Pukul 07.00 - 11.00 dan 15.00 - 21.00</span>
             </div>
-            <Link href="https://wa.me/6282220348804" className="flex gap-2 justify-start items-center">
+            <Link href="https://wa.me/628135935187" className="flex gap-2 justify-start items-center">
               <FontAwesomeIcon icon={faWhatsapp} className="text-prime" />
-              <span className="underline">+62 822-2034-8804 (Pak Muh)</span>
+              <span className="underline">+62 813-5935-187 (Pak Moh)</span>
             </Link>
           </div>
           
