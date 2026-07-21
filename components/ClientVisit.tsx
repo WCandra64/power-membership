@@ -139,8 +139,8 @@ export default function VisitHistory({ username, }: { username?: string; }) {
 
           {/* History */}
           { history.map((item) => {
-              const start = localTime(new Date(item.waktu_mulai));
-              const end = localTime(new Date(item.waktu_akhir));
+              const start = new Date(item.waktu_mulai);
+              const end = new Date(item.waktu_akhir);
               return(
                 <div key={item.id_visit} className="border rounded-sm p-4 flex flex-col gap-3" >
 
