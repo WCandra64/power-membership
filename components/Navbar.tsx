@@ -124,12 +124,12 @@ export default function Navbar() {
                 <hr />
 
                 { isAdmin ? (
-                  <BareButton onClick={() => {handleLogout; setDrawerOpen(false)}}>
+                  <BareButton onClick={() => {handleLogout(); setDrawerOpen(false)}}>
                     <FontAwesomeIcon icon={faRightFromBracket} size='xl' className='w-6' />
                     Log Out
                   </BareButton>
                 ) : (
-                  <div onClick={() => {handleLogout; setDrawerOpen(false)}} className='flex gap-4 items-center justify-end text-prime hover:text-stroke cursor-pointer'>
+                  <div onClick={() => {handleLogout(); setDrawerOpen(false)}} className='flex gap-4 items-center justify-end text-prime hover:text-stroke cursor-pointer'>
                     <div className="font-bold tracking-wide">Log Out</div>
                     <FontAwesomeIcon icon={faRightFromBracket} size='xl' className='w-6' />
                   </div>
