@@ -154,7 +154,7 @@ export default function VisitHistory({ username, }: { username?: string; }) {
                     </span>
 
                     <span className="text-sm text-paragraph">
-                      { duration(start, item.isActive ? localTime() : end) }
+                      { duration(start, item.isActive ? new Date() : end) }
                     </span>
                   </div>
 
